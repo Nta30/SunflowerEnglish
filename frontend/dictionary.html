@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Từ điển | Sunflower English</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="dictionary.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href = 'index.html'">
+        🌻 Sunflower
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="toeic.html">Luyện TOEIC</a></li>
+        <li><a href="#" style="color: var(--primary-hover)">Từ điển</a></li>
+        <li><a href="flashcard.html">Flashcard</a></li>
+      </ul>
+
+      <div class="nav-auth">
+        <button class="btn-login" id="navLoginBtn">Đăng nhập</button>
+        <div class="user-menu" id="userMenu" style="display: none">
+          <div class="user-profile-btn">
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
+              alt="Avatar"
+              class="avatar"
+            />
+            <span>Nắng Mới</span>
+            <span class="arrow">▼</span>
+          </div>
+          <ul class="dropdown-content">
+            <li><a href="#">⚙️ Cài đặt tài khoản</a></li>
+            <li><a href="#">❓ Trợ giúp</a></li>
+            <li>
+              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="dict-container">
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Nhập từ vựng tiếng Anh bạn muốn tra cứu..."
+        />
+        <button id="searchBtn">🔍</button>
+      </div>
+
+      <div id="welcomeState" class="dict-state">
+        <h2>Gieo hạt từ vựng 🌱</h2>
+        <p>Nhập một từ tiếng Anh vào ô tìm kiếm để xem điều kỳ diệu nhé!</p>
+      </div>
+
+      <div id="resultState" class="dict-state" style="display: none">
+        <div class="word-header">
+          <h1 id="wordTitle">sunflower</h1>
+          <button class="audio-btn" id="audioBtn">🔊</button>
+          <button class="save-btn" id="saveWordBtn">❤️</button>
+        </div>
+
+        <p class="phonetic" id="wordPhonetic">/ˈsʌnˌflaʊ.ər/</p>
+
+        <div class="word-types" id="wordTypes">
+          <span class="type-badge noun">Danh từ</span>
+        </div>
+
+        <div class="word-meanings">
+          <ul>
+            <li>
+              Hoa hướng dương (một loại cây cao có bông hoa lớn màu vàng).
+            </li>
+          </ul>
+        </div>
+
+        <div class="word-examples">
+          <p class="ex-title">Ví dụ:</p>
+          <div class="ex-item">
+            <p class="en">She planted sunflower seeds in the garden.</p>
+            <p class="vi">
+              Cô ấy đã gieo những hạt giống hoa hướng dương trong vườn.
+            </p>
+          </div>
+          <div class="ex-item">
+            <p class="en">The sunflower always turns towards the sun.</p>
+            <p class="vi">Hoa hướng dương luôn hướng về phía mặt trời.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="dictionary.js"></script>
+  </body>
+</html>

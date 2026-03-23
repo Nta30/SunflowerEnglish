@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sunflower English | Học tiếng Anh dễ thương</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">🌻 Sunflower</div>
+      <ul class="nav-links">
+        <li>
+          <a
+            href="#"
+            style="color: var(--primary-hover)"
+            data-target="Trang chủ"
+            >Trang chủ</a
+          >
+        </li>
+        <li><a href="toeic.html" data-target="Luyện TOEIC">Luyện TOEIC</a></li>
+        <li><a href="dictionary.html" data-target="Từ điển">Từ điển</a></li>
+        <li><a href="flashcard.html" data-target="Flashcard">Flashcard</a></li>
+      </ul>
+
+      <div class="nav-auth">
+        <button class="btn-login" id="navLoginBtn">Đăng nhập</button>
+
+        <div class="user-menu" id="userMenu" style="display: none">
+          <div class="user-profile-btn">
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
+              alt="Avatar"
+              class="avatar"
+            />
+            <span>Nắng Mới</span>
+            <span class="arrow">▼</span>
+          </div>
+          <ul class="dropdown-content">
+            <li><a href="#">⚙️ Cài đặt tài khoản</a></li>
+            <li><a href="#">❓ Trợ giúp</a></li>
+            <li>
+              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero" id="heroSection">
+      <div class="hero-content">
+        <h1 id="heroTitle">
+          Cùng vươn lên đón nắng với <br />
+          <span class="highlight">Sunflower English</span>
+        </h1>
+        <p id="heroDesc">
+          Nền tảng học tiếng Anh cực "chill", giúp bạn ghi nhớ từ vựng và chinh
+          phục TOEIC mỗi ngày như một thói quen vui vẻ!
+        </p>
+        <button class="btn-primary" id="heroCtaBtn">
+          Bắt đầu trồng hoa ngay 🌱
+        </button>
+      </div>
+
+      <div class="hero-demo">
+        <div class="flashcard-container">
+          <div class="flashcard" id="demoCard">
+            <div class="card-face card-front">
+              <h3>Sunflower</h3>
+              <span class="word-type">(noun)</span>
+              <p class="click-hint">Click để lật thẻ 👆</p>
+            </div>
+            <div class="card-face card-back">
+              <h3>Hoa hướng dương</h3>
+              <p class="phonetic">/ˈsʌnˌflaʊ.ər/</p>
+              <p class="example">"She is as bright as a sunflower."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <section
+      class="practice-tests"
+      id="practiceTestsSection"
+      style="display: none"
+    >
+      <div class="section-title">
+        <h2>Đề Thi Nổi Bật 🌱</h2>
+        <p>Tiếp tục hành trình gieo hạt kiến thức của bạn</p>
+      </div>
+
+      <div class="test-grid">
+        <div class="test-card">
+          <h3>TOEIC Full Test 1</h3>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 60%"></div>
+          </div>
+          <p class="question-info">70 Câu hỏi</p>
+          <button class="btn-take-test">Làm bài tiếp</button>
+        </div>
+
+        <div class="test-card">
+          <h3>TOEIC Part 5 Practice</h3>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 35%"></div>
+          </div>
+          <p class="question-info">25 Câu hỏi</p>
+          <button class="btn-take-test">Làm bài tiếp</button>
+        </div>
+
+        <div class="test-card">
+          <h3>TOEIC Part 5 Practice</h3>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 45%"></div>
+          </div>
+          <p class="question-info">11 Câu hỏi</p>
+          <button class="btn-take-test">Làm bài tiếp</button>
+        </div>
+      </div>
+    </section>
+    <section class="features">
+      <div class="section-title">
+        <h2>Khám phá Vườn Hướng Dương</h2>
+        <p>Mọi thứ bạn cần để giỏi tiếng Anh đều ở đây</p>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>Luyện đề TOEIC</h3>
+          <p>
+            Làm test thực tế, tự động chấm điểm, so đáp án chi tiết và theo dõi
+            những câu thường sai.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Từ Điển Đa Năng</h3>
+          <p>
+            Tra nghĩa, xem phiên âm, nghe phát âm chuẩn và lưu trực tiếp từ mới
+            vào bộ sưu tập.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗂️</div>
+          <h3>Ôn tập Flashcard</h3>
+          <p>
+            Tự tạo bộ thẻ từ vựng của riêng bạn, ôn tập thông minh với thuật
+            toán lặp lại ngắt quãng.
+          </p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Góc Thống Kê</h3>
+          <p>
+            Theo dõi sự tiến bộ mỗi ngày: Số đề đã làm, điểm trung bình và số
+            lượng từ vựng đã thuộc.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div id="authModal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModalBtn">&times;</span>
+
+        <div class="modal-header">
+          <h2 id="modalTitle">Đăng nhập</h2>
+          <p id="modalDesc">Chào mừng bạn trở lại vườn hoa! 🌻</p>
+        </div>
+
+        <form id="authForm" class="auth-form">
+          <div class="input-group">
+            <input id="Username" type="text" placeholder="Username" required />
+          </div>
+          <div class="input-group register-element" style="display: none">
+            <input id="Fullname" type="text" placeholder="Họ tên" required />
+          </div>
+          <div class="input-group register-element" style="display: none">
+            <input id="Email" type="email" placeholder="Email" required />
+          </div>
+          <div class="input-group">
+            <input id="Password" type="password" placeholder="Mật khẩu" required />
+          </div>
+          <div class="input-group register-element" style="display: none">
+            <input id="ConfirmPassword" type="password" placeholder="Nhập lại mật khẩu" />
+          </div>
+
+          <button type="submit" class="btn-primary auth-submit" id="submitBtn">
+            Đăng nhập
+          </button>
+        </form>
+
+        <div class="modal-footer">
+          <span id="togglePrompt">Bạn chưa có tài khoản?</span>
+          <a href="#" id="toggleAuthLink" class="toggle-link"
+            >Đăng ký ngay 🌱</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

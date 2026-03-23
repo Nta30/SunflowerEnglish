@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcard | Sunflower English</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="flashcard.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href = 'index.html'">
+        🌻 Sunflower
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="toeic.html">Luyện TOEIC</a></li>
+        <li><a href="dictionary.html">Từ điển</a></li>
+        <li><a href="#" style="color: var(--primary-hover)">Flashcard</a></li>
+      </ul>
+      <div class="nav-auth">
+        <div class="user-menu" id="userMenu">
+          <div class="user-profile-btn">
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
+              alt="Avatar"
+              class="avatar"
+            />
+            <span>Nắng Mới</span>
+            <span class="arrow">▼</span>
+          </div>
+          <ul class="dropdown-content">
+            <li><a href="#">⚙️ Cài đặt tài khoản</a></li>
+            <li><a href="#">❓ Trợ giúp</a></li>
+            <li>
+              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flashcard-main">
+      <div id="deckListView">
+        <div class="deck-header">
+          <h1>Vườn Từ Vựng 🪴</h1>
+          <button class="btn-primary" id="createNewDeckBtn">
+            Gieo hạt mới 🌱
+          </button>
+        </div>
+        <div class="deck-grid" id="deckGrid"></div>
+      </div>
+
+      <div id="studyView" style="display: none">
+        <div class="study-header">
+          <button class="btn-login" id="backToDecksBtn">
+            🔙 Quay lại vườn
+          </button>
+          <h2 id="currentDeckTitle"></h2>
+          <span class="progress-text" id="studyProgress"></span>
+        </div>
+
+        <div class="study-container">
+          <div class="flashcard-container">
+            <div class="flashcard" id="studyCard">
+              <div class="card-face card-front">
+                <h3 id="frontWord"></h3>
+                <p class="click-hint">Click để lật thẻ 👆</p>
+              </div>
+              <div class="card-face card-back">
+                <h3 id="backWord"></h3>
+                <p class="phonetic" id="backPhonetic"></p>
+                <p class="example" id="backExample"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="study-controls">
+            <button class="btn-mem btn-forget" id="btnForget">Quên 🥀</button>
+            <button class="btn-mem btn-hard" id="btnHard">Hơi nhớ 🌿</button>
+            <button class="btn-mem btn-easy" id="btnEasy">Đã thuộc 🌻</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="flashcard.js"></script>
+  </body>
+</html>

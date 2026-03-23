@@ -1,0 +1,211 @@
+.dict-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 0 20px;
+  min-height: 70vh;
+}
+
+.search-box {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 20px 30px;
+  border-radius: 40px;
+  border: 3px solid #fff59d;
+  font-size: 18px;
+  font-family: "Nunito", sans-serif;
+  outline: none;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+#searchInput:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 25px rgba(255, 213, 79, 0.2);
+}
+
+#searchBtn {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 5px 15px rgba(255, 213, 79, 0.4);
+}
+
+#searchBtn:hover {
+  transform: scale(1.05) rotate(10deg);
+}
+
+.dict-state {
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+#welcomeState h2 {
+  color: var(--text-color);
+  margin-bottom: 15px;
+}
+
+#welcomeState p {
+  color: #8d6e63;
+}
+
+#resultState {
+  text-align: left;
+  border-color: var(--primary-color);
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.word-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.word-header h1 {
+  font-size: 42px;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.audio-btn,
+.save-btn {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.audio-btn {
+  background-color: #e1f5fe;
+  color: #0288d1;
+}
+
+.save-btn {
+  background-color: #ffebee;
+  color: #d32f2f;
+  margin-left: auto;
+}
+
+.audio-btn:hover,
+.save-btn:hover {
+  transform: scale(1.1);
+}
+
+.phonetic {
+  font-size: 20px;
+  color: #5d4037;
+  margin-bottom: 20px;
+  font-family: "Nunito", sans-serif;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.type-badge.noun {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+.type-badge.verb {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+.type-badge.adj {
+  background-color: #f3e5f5;
+  color: #6a1b9a;
+}
+
+.word-meanings ul {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.word-meanings li {
+  font-size: 18px;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.word-meanings li::before {
+  content: "🌻";
+  position: absolute;
+  left: 0;
+  font-size: 14px;
+  top: 3px;
+}
+
+.word-examples {
+  background-color: #fffbf0;
+  padding: 25px;
+  border-radius: 20px;
+  border-left: 4px solid var(--primary-color);
+}
+
+.ex-title {
+  font-weight: 700;
+  color: #f57f17;
+  margin-bottom: 15px;
+  font-family: "Quicksand", sans-serif;
+}
+
+.ex-item {
+  margin-bottom: 15px;
+}
+
+.ex-item:last-child {
+  margin-bottom: 0;
+}
+
+.ex-item .en {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.ex-item .vi {
+  color: #6d4c41;
+  font-size: 15px;
+  font-style: italic;
+}

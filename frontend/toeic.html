@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Luyện TOEIC | Sunflower English</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="toeic.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo" onclick="window.location.href = 'index.html'">
+        🌻 Sunflower
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li>
+          <a href="toeic.html" style="color: var(--primary-hover)"
+            >Luyện TOEIC</a
+          >
+        </li>
+        <li><a href="dictionary.html">Từ điển</a></li>
+        <li><a href="flashcard.html">Flashcard</a></li>
+      </ul>
+      <div class="nav-auth">
+        <div class="user-menu" id="userMenu">
+          <div class="user-profile-btn">
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
+              alt="Avatar"
+              class="avatar"
+            />
+            <span>Nắng Mới</span>
+            <span class="arrow">▼</span>
+          </div>
+          <ul class="dropdown-content">
+            <li><a href="#">⚙️ Cài đặt</a></li>
+            <li>
+              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="toeic-layout">
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li class="active" data-tab="dashboard">📊 Tổng quan</li>
+          <li data-tab="library">📚 Kho đề thi</li>
+          <li data-tab="history">⏳ Lịch sử làm bài</li>
+        </ul>
+      </aside>
+
+      <main class="toeic-content">
+        <div id="dashboard" class="tab-pane active">
+          <div class="stats-header">
+            <h2>Khu vườn thành tích 🌱</h2>
+            <div class="target-box">
+              <span>Mục tiêu:</span>
+              <strong>850</strong>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-info">
+                <p>Điểm cao nhất</p>
+                <h3>820</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⚖️</div>
+              <div class="stat-info">
+                <p>Trung bình</p>
+                <h3>745</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📉</div>
+              <div class="stat-info">
+                <p>Điểm thấp nhất</p>
+                <h3>600</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📝</div>
+              <div class="stat-info">
+                <p>Đề đã làm</p>
+                <h3>12</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-section">
+            <h3>Phân tích kỹ năng</h3>
+            <div class="skill-bars">
+              <div class="skill-bar-group">
+                <div class="skill-label">
+                  <span>🎧 Listening (LC)</span>
+                  <span>410 / 495</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill lc-fill" style="width: 82%"></div>
+                </div>
+              </div>
+              <div class="skill-bar-group">
+                <div class="skill-label">
+                  <span>📖 Reading (RC)</span>
+                  <span>335 / 495</span>
+                </div>
+                <div class="bar-bg">
+                  <div class="bar-fill rc-fill" style="width: 67%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="library" class="tab-pane">
+          <div class="filter-bar">
+            <button class="filter-btn active">Tất cả</button>
+            <button class="filter-btn">Đề Full</button>
+            <button class="filter-btn">Mini Test</button>
+            <button class="filter-btn">Chưa làm</button>
+            <button class="filter-btn">Đang làm</button>
+          </div>
+          <div class="test-grid" id="testGrid"></div>
+        </div>
+
+        <div id="history" class="tab-pane">
+          <h2>Lịch sử gặt hái 🌻</h2>
+          <div class="history-list" id="historyList"></div>
+        </div>
+
+        <div id="testArea" class="tab-pane">
+          <div class="test-header">
+            <button class="btn-back-library" id="backToLibraryBtn">
+              🔙 Thoát
+            </button>
+            <div class="test-info">
+              <span class="part-badge">TOEIC Full Test 1</span>
+            </div>
+            <div class="timer" id="countdownTimer">☀️ 120:00</div>
+            <button class="btn-submit-test" id="submitTestBtn">Nộp bài</button>
+          </div>
+
+          <div class="test-layout">
+            <div class="passage-col">
+              <div class="passage-card">
+                <h4>Direction:</h4>
+                <p>
+                  A word or phrase is missing in each of the sentences below.
+                  Four answer choices are given below each sentence. Select the
+                  best answer to complete the sentence.
+                </p>
+              </div>
+            </div>
+            <div class="questions-col">
+              <div class="question-card">
+                <p class="q-text">
+                  <strong>101.</strong> Customer service representatives are
+                  available _______ 8:00 A.M. and 6:00 P.M.
+                </p>
+                <div class="options">
+                  <label class="option"
+                    ><input type="radio" name="q101" value="A" /><span
+                      class="opt-label"
+                      >A</span
+                    >
+                    from</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q101" value="B" /><span
+                      class="opt-label"
+                      >B</span
+                    >
+                    between</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q101" value="C" /><span
+                      class="opt-label"
+                      >C</span
+                    >
+                    until</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q101" value="D" /><span
+                      class="opt-label"
+                      >D</span
+                    >
+                    around</label
+                  >
+                </div>
+              </div>
+              <div class="question-card">
+                <p class="q-text">
+                  <strong>102.</strong> Please review the _______ documents
+                  before signing the contract.
+                </p>
+                <div class="options">
+                  <label class="option"
+                    ><input type="radio" name="q102" value="A" /><span
+                      class="opt-label"
+                      >A</span
+                    >
+                    attach</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q102" value="B" /><span
+                      class="opt-label"
+                      >B</span
+                    >
+                    attached</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q102" value="C" /><span
+                      class="opt-label"
+                      >C</span
+                    >
+                    attaching</label
+                  >
+                  <label class="option"
+                    ><input type="radio" name="q102" value="D" /><span
+                      class="opt-label"
+                      >D</span
+                    >
+                    attachment</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="resultModal" class="modal-overlay">
+      <div class="modal-content result-content">
+        <h2 id="resultGreeting">Tuyệt vời! 🎉</h2>
+        <div class="score-circle">
+          <span id="finalScore">820</span>
+          <p>Tổng điểm</p>
+        </div>
+        <div class="score-details">
+          <p>Listening: <strong class="lc-color">410</strong></p>
+          <p>Reading: <strong class="rc-color">410</strong></p>
+        </div>
+        <button
+          class="btn-primary"
+          id="reviewBtn"
+          style="margin-top: 20px; width: 100%"
+        >
+          Xem chi tiết & Chữa lỗi 📝
+        </button>
+      </div>
+    </div>
+
+    <script src="toeic.js"></script>
+  </body>
+</html>

@@ -1,0 +1,117 @@
+.flashcard-main {
+  padding: 40px 10%;
+  min-height: 80vh;
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.deck-card {
+  background-color: var(--card-bg);
+  border-radius: 25px;
+  padding: 30px;
+  text-align: center;
+  border: 3px solid transparent;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s,
+    border-color 0.3s;
+}
+
+.deck-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(255, 213, 79, 0.2);
+  border-color: var(--primary-color);
+}
+
+.deck-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.deck-title {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.deck-stats {
+  color: #8d6e63;
+  font-size: 15px;
+  background-color: #fffbf0;
+  padding: 5px 15px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.study-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.progress-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-color);
+  background-color: #e8f5e9;
+  padding: 8px 20px;
+  border-radius: 20px;
+}
+
+.study-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.study-controls {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-mem {
+  padding: 15px 30px;
+  border-radius: 25px;
+  border: none;
+  font-family: "Quicksand", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.btn-mem:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+.btn-forget {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-hard {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.btn-easy {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}

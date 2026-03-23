@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Sunflower English</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="admin-logo">🌻 Sunflower Admin</div>
+        <ul class="admin-menu">
+          <li class="active" data-tab="tab-dashboard">📊 Bảng điều khiển</li>
+          <li data-tab="tab-users">👥 Quản lý Người dùng</li>
+          <li data-tab="tab-exams">📝 Quản lý Đề thi</li>
+          <li data-tab="tab-flashcards">🗂️ Quản lý Flashcard</li>
+          <li data-tab="tab-settings">⚙️ Cài đặt hệ thống</li>
+        </ul>
+        <button class="admin-logout" id="adminLogoutBtn">🚪 Đăng xuất</button>
+      </aside>
+
+      <main class="admin-content">
+        <header class="admin-header">
+          <h2>Bảng điều khiển</h2>
+          <div class="admin-profile">
+            <img
+              src="https://api.dicebear.com/7.x/notionists/svg?seed=Admin"
+              alt="Admin"
+              class="avatar"
+            />
+            <span>Quản trị viên</span>
+          </div>
+        </header>
+
+        <div id="tab-dashboard" class="admin-tab-pane active">
+          <div class="admin-stats-grid">
+            <div class="admin-stat-card">
+              <div class="icon users-icon">👥</div>
+              <div class="info">
+                <p>Tổng học viên</p>
+                <h3>1,245</h3>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="icon exams-icon">📝</div>
+              <div class="info">
+                <p>Lượt làm bài</p>
+                <h3>8,430</h3>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="icon score-icon">🎯</div>
+              <div class="info">
+                <p>Điểm trung bình</p>
+                <h3>680</h3>
+              </div>
+            </div>
+            <div class="admin-stat-card">
+              <div class="icon words-icon">🔤</div>
+              <div class="info">
+                <p>Từ vựng đã lưu</p>
+                <h3>15,200</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-dashboard-split">
+            <div class="admin-panel">
+              <h3>Hoạt động gần đây</h3>
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Học viên</th>
+                    <th>Hành động</th>
+                    <th>Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody id="recentActivityTable"></tbody>
+              </table>
+            </div>
+            <div class="admin-panel">
+              <h3>Đề thi phổ biến nhất</h3>
+              <ul class="top-exams-list" id="topExamsList"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-users" class="admin-tab-pane">
+          <div class="admin-panel-header">
+            <h3>Danh sách Người dùng</h3>
+            <div class="admin-actions">
+              <input
+                type="text"
+                placeholder="Tìm kiếm email..."
+                class="admin-search"
+              />
+              <button class="btn-primary" onclick="openCrudModal('user')">
+                + Thêm Học viên
+              </button>
+            </div>
+          </div>
+          <div class="admin-panel">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Họ Tên</th>
+                  <th>Email</th>
+                  <th>Trạng thái</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-exams" class="admin-tab-pane">
+          <div class="admin-panel-header">
+            <h3>Kho Đề Thi TOEIC</h3>
+            <div class="admin-actions">
+              <input
+                type="text"
+                placeholder="Tìm kiếm đề thi..."
+                class="admin-search"
+              />
+              <button class="btn-primary" onclick="openCrudModal('exam')">
+                + Tạo Đề mới
+              </button>
+            </div>
+          </div>
+          <div class="admin-panel">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Mã đề</th>
+                  <th>Tên đề thi</th>
+                  <th>Số câu</th>
+                  <th>Lượt làm</th>
+                  <th>Trạng thái</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="examsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-flashcards" class="admin-tab-pane">
+          <div class="admin-panel">
+            <h3>Quản lý Flashcard</h3>
+            <p>Tính năng đang được phát triển...</p>
+          </div>
+        </div>
+
+        <div id="tab-settings" class="admin-tab-pane">
+          <div class="admin-panel">
+            <h3>Cài đặt hệ thống</h3>
+            <p>Tính năng đang được phát triển...</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="crudModal" class="modal-overlay">
+      <div class="modal-content admin-modal">
+        <span class="close-btn" onclick="closeCrudModal()">&times;</span>
+        <div class="modal-header">
+          <h2 id="crudModalTitle">Thêm mới</h2>
+        </div>
+        <form id="crudForm" class="auth-form">
+          <div id="crudFormFields"></div>
+          <button
+            type="submit"
+            class="btn-primary auth-submit"
+            style="margin-top: 20px"
+          >
+            Lưu dữ liệu
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
