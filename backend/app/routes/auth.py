@@ -30,7 +30,7 @@ def register():
     try:
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({"message": "Đăng ký thành công! Chào mừng bạn đến với Sunflower. 🌻"}), 201
+        return jsonify({"message": "Đăng ký thành công!"}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Lỗi hệ thống: {str(e)}"}), 500
@@ -59,7 +59,7 @@ def login():
             }
         }), 200
     
-    return jsonify({"message": "Tài khoản hoặc mật khẩu không chính xác! ❌"}), 401
+    return jsonify({"message": "Tài khoản hoặc mật khẩu không chính xác!"}), 401
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()

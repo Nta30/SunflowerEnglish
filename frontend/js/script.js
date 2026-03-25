@@ -1,12 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { loadAllComponent } from "./component.js";
+import { isLoggedIn, saveAuth, logout, handleAuth } from "./auth.js";
+import { updateUIOnLogin, updateUIOnLogout, showToast, initNavbar } from "./ui.js";
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadAllComponent();
+
+  initNavbar();
+
   const flashcard = document.getElementById("demoCard");
   if (flashcard) {
     flashcard.addEventListener("click", () => {
       flashcard.classList.toggle("is-flipped");
     });
   }
+  setInterval(() => {
+      if (!isLoggedIn()) {
+        initNavbar();
+        logout();
+        updateUIOnLogout(
+          heroTitle,
+          heroDesc,
+          heroCtaBtn,
+          practiceTestsSection,
+        );
+      }
+  }, 12 * 60 * 60 * 1000);
 
-  let isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   let isLoginView = true;
 
   const modal = document.getElementById("authModal");
@@ -20,14 +38,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const togglePrompt = document.getElementById("togglePrompt");
 
   const authForm = document.getElementById("authForm");
-  const navLoginBtn = document.getElementById("navLoginBtn");
 
   const heroTitle = document.getElementById("heroTitle");
   const heroDesc = document.getElementById("heroDesc");
   const heroCtaBtn = document.getElementById("heroCtaBtn");
 
-  const userMenu = document.getElementById("userMenu");
-  const logoutBtn = document.getElementById("logoutBtn");
   const practiceTestsSection = document.getElementById("practiceTestsSection");
 
   function openModal() {
@@ -67,52 +82,17 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleLink.innerText = "Đăng nhập ngay 🌻";
   }
 
-  function updateUIOnLogin() {
-    navLoginBtn.style.display = "none";
-    userMenu.style.display = "block";
-
-    if (heroTitle && heroDesc && heroCtaBtn) {
-      heroTitle.innerHTML =
-        'Chào mừng bạn quay lại, <br> <span class="highlight">Học viên Hướng Dương!</span>';
-      heroDesc.innerText =
-        'Hôm nay bạn muốn tưới thêm kiến thức cho "vườn TOEIC" của mình hay ôn tập Flashcard nào?';
-      heroCtaBtn.innerText = "Vào học ngay thôi 🚀";
-
-      if (practiceTestsSection) {
-        practiceTestsSection.style.display = "block";
-        practiceTestsSection.style.animation = "fadeIn 0.8s ease-out";
-      }
-    }
-  }
-
-  function updateUIOnLogout() {
-    navLoginBtn.style.display = "inline-block";
-    userMenu.style.display = "none";
-
-    if (heroTitle && heroDesc && heroCtaBtn) {
-      heroTitle.innerHTML =
-        'Cùng vươn lên đón nắng với <br> <span class="highlight">Sunflower English</span>';
-      heroDesc.innerText =
-        'Nền tảng học tiếng Anh cực "chill", giúp bạn ghi nhớ từ vựng và chinh phục TOEIC mỗi ngày như một thói quen vui vẻ!';
-      heroCtaBtn.innerText = "Bắt đầu trồng hoa ngay 🌱";
-
-      if (practiceTestsSection) {
-        practiceTestsSection.style.display = "none";
-      }
-    }
-  }
-
-  if (isLoggedIn) {
-    updateUIOnLogin();
+  if (isLoggedIn()) {
+    updateUIOnLogin(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection);
   } else {
-    updateUIOnLogout();
+    updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection);
   }
 
   document
     .querySelectorAll(".nav-links a, #navLoginBtn, #heroCtaBtn")
     .forEach((element) => {
       element.addEventListener("click", function (e) {
-        if (isLoggedIn) return;
+        if (isLoggedIn()) return;
 
         const targetText = this.getAttribute("data-target") || this.innerText;
         if (
@@ -156,52 +136,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const fullname = document.getElementById("Fullname").value;
       const email = document.getElementById("Email").value;
 
-      // Đăng ký
-      const url = isLoginView ? "/api/auth/login" : "/api/auth/register";
-      const payload = isLoginView
-        ? { username, password }
-        : { username, password, fullname, email };
+      const payload = { username, password, fullname, email };
 
       try {
-        const response = await fetch(`http://127.0.0.1:5000${url}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        const result = await handleAuth(isLoginView, payload);
 
-        const result = await response.json();
-
-        if (response.ok) {
-          if (isLoginView) {
-            // Lưu Token vào LocalStorage
-            localStorage.setItem("token", result.access_token);
-            localStorage.setItem("user_info", JSON.stringify(result.user));
-            localStorage.setItem("isLoggedIn", "true");
-
-            alert("🌻 Đăng nhập thành công!");
-            isLoggedIn = true;
-            updateUIOnLogin();
+        if (isLoginView) {
+          if (result.access_token) {
+            saveAuth(result);
+            initNavbar();
+            updateUIOnLogin(
+              heroTitle,
+              heroDesc,
+              heroCtaBtn,
+              practiceTestsSection,
+            );
+            showToast(result.message, "success");
             closeModal();
           } else {
-            alert("🌱 Đăng ký thành công! Hãy đăng nhập nhé.");
-            switchToLogin();
+            showToast(result.message, "error");
           }
         } else {
-          alert(result.message); 
+          showToast(result.message, "success");
+          switchToLogin();
         }
       } catch (error) {
-        alert("❌ Không kết nối được với Server Backend!");
+        showToast("Không kết nối được với Server Backend!", "error");
       }
-    });
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      isLoggedIn = false;
-      localStorage.removeItem("isLoggedIn");
-      updateUIOnLogout();
-      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
 });
