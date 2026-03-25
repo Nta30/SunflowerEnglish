@@ -11,7 +11,7 @@ class NguoiDung(db.Model):
     Email = db.Column(db.String(100))
     VaiTro = db.Column(db.SmallInteger) # 0: User, 1: Admin
     TrangThai = db.Column(db.SmallInteger) # 0: Khoá, 1: Hoạt động
-    NgayTao = db.Column(db.DateTime, default=datetime.utcnow)
+    NgayTao = db.Column(db.DateTime, default=datetime.now())
 
     # Quan hệ
     phien_lam_bai = db.relationship('PhienLamBai', backref='user', lazy=True)

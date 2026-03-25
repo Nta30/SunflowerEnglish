@@ -6,50 +6,11 @@
     <title>Sunflower English | Học tiếng Anh dễ thương</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="style.css" />
+      rel="stylesheet" />
+    <link rel="stylesheet" href="./css/style.css" />
   </head>
   <body>
-    <nav class="navbar">
-      <div class="logo">🌻 Sunflower</div>
-      <ul class="nav-links">
-        <li>
-          <a
-            href="#"
-            style="color: var(--primary-hover)"
-            data-target="Trang chủ"
-            >Trang chủ</a
-          >
-        </li>
-        <li><a href="toeic.html" data-target="Luyện TOEIC">Luyện TOEIC</a></li>
-        <li><a href="dictionary.html" data-target="Từ điển">Từ điển</a></li>
-        <li><a href="flashcard.html" data-target="Flashcard">Flashcard</a></li>
-      </ul>
-
-      <div class="nav-auth">
-        <button class="btn-login" id="navLoginBtn">Đăng nhập</button>
-
-        <div class="user-menu" id="userMenu" style="display: none">
-          <div class="user-profile-btn">
-            <img
-              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
-              alt="Avatar"
-              class="avatar"
-            />
-            <span>Nắng Mới</span>
-            <span class="arrow">▼</span>
-          </div>
-          <ul class="dropdown-content">
-            <li><a href="#">⚙️ Cài đặt tài khoản</a></li>
-            <li><a href="#">❓ Trợ giúp</a></li>
-            <li>
-              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div data-component="navbar"></div>
 
     <header class="hero" id="heroSection">
       <div class="hero-content">
@@ -203,6 +164,8 @@
       </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="toastContainer"></div>
+
+    <script type="module" src="./js/script.js"></script>
   </body>
 </html>
