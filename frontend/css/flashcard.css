@@ -2,20 +2,17 @@
   padding: 40px 10%;
   min-height: 80vh;
 }
-
 .deck-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 40px;
 }
-
 .deck-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 30px;
 }
-
 .deck-card {
   background-color: var(--card-bg);
   border-radius: 25px;
@@ -29,24 +26,20 @@
     box-shadow 0.3s,
     border-color 0.3s;
 }
-
 .deck-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 15px 30px rgba(255, 213, 79, 0.2);
   border-color: var(--primary-color);
 }
-
 .deck-icon {
   font-size: 50px;
   margin-bottom: 15px;
 }
-
 .deck-title {
   font-size: 22px;
   margin-bottom: 10px;
   color: var(--text-color);
 }
-
 .deck-stats {
   color: #8d6e63;
   font-size: 15px;
@@ -54,15 +47,14 @@
   padding: 5px 15px;
   border-radius: 20px;
   display: inline-block;
+  font-weight: 700;
 }
-
 .study-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 50px;
 }
-
 .progress-text {
   font-size: 18px;
   font-weight: 700;
@@ -71,19 +63,16 @@
   padding: 8px 20px;
   border-radius: 20px;
 }
-
 .study-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 40px;
 }
-
 .study-controls {
   display: flex;
   gap: 20px;
 }
-
 .btn-mem {
   padding: 15px 30px;
   border-radius: 25px;
@@ -96,22 +85,130 @@
     transform 0.2s,
     box-shadow 0.2s;
 }
-
 .btn-mem:hover {
   transform: translateY(-3px) scale(1.05);
 }
-
 .btn-forget {
   background-color: #ffebee;
   color: #d32f2f;
 }
-
 .btn-hard {
   background-color: #fff3e0;
   color: #e65100;
 }
-
 .btn-easy {
   background-color: #e8f5e9;
   color: #2e7d32;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.detail-actions {
+  display: flex;
+  gap: 15px;
+}
+.detail-title-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  background: white;
+  padding: 20px 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+.detail-title-section h2 {
+  margin: 0;
+  font-size: 28px;
+}
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.card-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  border: 1px solid #eeeeee;
+  transition: 0.2s;
+}
+.card-list-item:hover {
+  border-color: var(--primary-color);
+}
+.card-word {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color);
+  width: 25%;
+}
+.card-meaning {
+  font-size: 16px;
+  color: #5d4037;
+  width: 35%;
+}
+.card-extra {
+  font-size: 14px;
+  color: #9e9e9e;
+  width: 40%;
+  font-style: italic;
+}
+.empty-deck-msg {
+  text-align: center;
+  padding: 50px;
+  background: white;
+  border-radius: 20px;
+  color: #8d6e63;
+  font-size: 18px;
+  border: 2px dashed #e0e0e0;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: 0.3s;
+}
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.modal-content {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 20px;
+  position: relative;
+  max-width: 90%;
+  width: 450px;
+  text-align: center;
+}
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #757575;
+}
+.modal-header h2 {
+  margin-bottom: 20px;
+  color: var(--text-color);
 }
