@@ -8,8 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/frontend/css/style.css" />
-    <link rel="stylesheet" href="/frontend/css/toeic.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/toeic.css" />
   </head>
   <body>
     <nav class="navbar">
@@ -48,7 +48,7 @@
     </nav>
 
     <div class="toeic-layout">
-      <aside class="sidebar">
+      <aside class="sidebar" id="mainSidebar">
         <ul class="sidebar-menu">
           <li class="active" data-tab="dashboard">📊 Tổng quan</li>
           <li data-tab="library">📚 Kho đề thi</li>
@@ -61,11 +61,9 @@
           <div class="stats-header">
             <h2>Khu vườn thành tích 🌱</h2>
             <div class="target-box">
-              <span>Mục tiêu:</span>
-              <strong>850</strong>
+              <span>Mục tiêu:</span><strong>850</strong>
             </div>
           </div>
-
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-icon">🔥</div>
@@ -96,7 +94,6 @@
               </div>
             </div>
           </div>
-
           <div class="chart-section">
             <h3>Phân tích kỹ năng</h3>
             <div class="skill-bars">
@@ -126,9 +123,7 @@
           <div class="filter-bar">
             <button class="filter-btn active">Tất cả</button>
             <button class="filter-btn">Đề Full</button>
-            <button class="filter-btn">Mini Test</button>
             <button class="filter-btn">Chưa làm</button>
-            <button class="filter-btn">Đang làm</button>
           </div>
           <div class="test-grid" id="testGrid"></div>
         </div>
@@ -139,101 +134,45 @@
         </div>
 
         <div id="testArea" class="tab-pane">
-          <div class="test-header">
+          <div class="test-top-bar">
             <button class="btn-back-library" id="backToLibraryBtn">
               🔙 Thoát
             </button>
-            <div class="test-info">
-              <span class="part-badge">TOEIC Full Test 1</span>
+            <div class="audio-player-container">
+              <audio controls><source src="#" type="audio/mpeg" /></audio>
             </div>
-            <div class="timer" id="countdownTimer">☀️ 120:00</div>
-            <button class="btn-submit-test" id="submitTestBtn">Nộp bài</button>
           </div>
 
-          <div class="test-layout">
-            <div class="passage-col">
-              <div class="passage-card">
-                <h4>Direction:</h4>
-                <p>
-                  A word or phrase is missing in each of the sentences below.
-                  Four answer choices are given below each sentence. Select the
-                  best answer to complete the sentence.
-                </p>
+          <div class="part-tabs-container">
+            <button class="part-tab active" data-part="1">Part 1</button>
+            <button class="part-tab" data-part="2">Part 2</button>
+            <button class="part-tab" data-part="3">Part 3</button>
+            <button class="part-tab" data-part="4">Part 4</button>
+            <button class="part-tab" data-part="5">Part 5</button>
+            <button class="part-tab" data-part="6">Part 6</button>
+            <button class="part-tab" data-part="7">Part 7</button>
+          </div>
+
+          <div class="test-workspace">
+            <div class="test-content-area">
+              <div class="passage-col" id="passageCol" style="display: none">
+                <div class="passage-card" id="passageContent"></div>
               </div>
+              <div class="questions-col" id="questionsContainer"></div>
             </div>
-            <div class="questions-col">
-              <div class="question-card">
-                <p class="q-text">
-                  <strong>101.</strong> Customer service representatives are
-                  available _______ 8:00 A.M. and 6:00 P.M.
-                </p>
-                <div class="options">
-                  <label class="option"
-                    ><input type="radio" name="q101" value="A" /><span
-                      class="opt-label"
-                      >A</span
-                    >
-                    from</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q101" value="B" /><span
-                      class="opt-label"
-                      >B</span
-                    >
-                    between</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q101" value="C" /><span
-                      class="opt-label"
-                      >C</span
-                    >
-                    until</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q101" value="D" /><span
-                      class="opt-label"
-                      >D</span
-                    >
-                    around</label
-                  >
-                </div>
+
+            <div class="test-right-sidebar">
+              <div class="timer-box">
+                <p>Thời gian còn lại:</p>
+                <div class="timer" id="countdownTimer">120:00</div>
               </div>
-              <div class="question-card">
-                <p class="q-text">
-                  <strong>102.</strong> Please review the _______ documents
-                  before signing the contract.
-                </p>
-                <div class="options">
-                  <label class="option"
-                    ><input type="radio" name="q102" value="A" /><span
-                      class="opt-label"
-                      >A</span
-                    >
-                    attach</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q102" value="B" /><span
-                      class="opt-label"
-                      >B</span
-                    >
-                    attached</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q102" value="C" /><span
-                      class="opt-label"
-                      >C</span
-                    >
-                    attaching</label
-                  >
-                  <label class="option"
-                    ><input type="radio" name="q102" value="D" /><span
-                      class="opt-label"
-                      >D</span
-                    >
-                    attachment</label
-                  >
-                </div>
-              </div>
+              <button class="btn-submit-test" id="submitTestBtn">
+                NỘP BÀI
+              </button>
+              <p class="palette-hint">
+                Click vào số thứ tự để nhảy đến câu hỏi
+              </p>
+              <div class="question-palette" id="questionPalette"></div>
             </div>
           </div>
         </div>
@@ -261,6 +200,19 @@
       </div>
     </div>
 
-    <script src="/frontend/js/toeic.js"></script>
+    <div id="historyModal" class="modal-overlay">
+      <div class="modal-content admin-modal">
+        <span class="close-btn" id="closeHistoryBtn">&times;</span>
+        <div class="modal-header">
+          <h2>Chi tiết bài làm</h2>
+        </div>
+        <div
+          id="historyDetailContent"
+          style="margin-top: 20px; text-align: left; line-height: 1.8"
+        ></div>
+      </div>
+    </div>
+
+    <script src="./js/toeic.js"></script>
   </body>
 </html>
