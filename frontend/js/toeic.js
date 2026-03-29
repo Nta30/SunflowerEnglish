@@ -104,10 +104,6 @@ function renderLibrary(filterText) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  if (!isLoggedIn) {
-    window.location.href = "index.html";
-    return;
-  }
 
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
@@ -126,12 +122,14 @@ document.addEventListener("DOMContentLoaded", () => {
       tabs.forEach((t) => t.classList.remove("active"));
       panes.forEach((p) => {
         p.classList.remove("active");
+        p.style.display = "none";
       });
       this.classList.add("active");
       const targetId = this.getAttribute("data-tab");
       const targetPane = document.getElementById(targetId);
       if (targetPane) {
         targetPane.classList.add("active");
+        targetPane.style.display = "block";
       }
       window.scrollTo(0, 0);
     });
@@ -170,13 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const modal = document.getElementById("historyModal");
         const content = document.getElementById("historyDetailContent");
         content.innerHTML = `
-                <p><strong>Bài thi:</strong> ${data.name}</p>
-                <p><strong>Ngày hoàn thành:</strong> ${data.date}</p>
-                <p><strong>Thời gian làm bài:</strong> ${data.time}</p>
-                <p><strong>Điểm số:</strong> <span style="color:var(--accent-color); font-weight:bold">${data.score}</span></p>
-                <p><strong>Listening:</strong> 410/495</p>
-                <p><strong>Reading:</strong> 410/495</p>
-            `;
+          <p><strong>Bài thi:</strong> ${data.name}</p>
+          <p><strong>Ngày hoàn thành:</strong> ${data.date}</p>
+          <p><strong>Thời gian làm bài:</strong> ${data.time}</p>
+          <p><strong>Điểm số:</strong> <span style="color:var(--accent-color); font-weight:bold">${data.score}</span></p>
+          <p><strong>Listening:</strong> 410/495</p>
+          <p><strong>Reading:</strong> 410/495</p>
+        `;
         modal.classList.add("active");
       });
     });
@@ -306,19 +304,19 @@ document.addEventListener("DOMContentLoaded", () => {
           if (tabToClick && !tabToClick.classList.contains("active")) {
             tabToClick.click();
           }
+
           setTimeout(() => {
             const targetCard = document.getElementById(`q-${i}`);
             if (targetCard) {
-              targetCard.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
+              const y =
+                targetCard.getBoundingClientRect().top + window.scrollY - 150;
+              window.scrollTo({ top: y, behavior: "smooth" });
               targetCard.classList.add("highlight");
               setTimeout(() => {
                 targetCard.classList.remove("highlight");
               }, 1500);
             }
-          }, 50);
+          }, 100);
         });
         grid.appendChild(btn);
       }
@@ -403,11 +401,13 @@ window.openTestArea = function () {
   document.getElementById("mainSidebar").style.display = "none";
   document.querySelectorAll(".tab-pane").forEach((p) => {
     p.classList.remove("active");
+    p.style.display = "none";
   });
 
   const testArea = document.getElementById("testArea");
   if (testArea) {
     testArea.classList.add("active");
+    testArea.style.display = "block";
   }
 
   const tabPart1 = document.querySelector('.part-tab[data-part="1"]');

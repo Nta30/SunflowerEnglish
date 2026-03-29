@@ -43,10 +43,6 @@ let myDecks = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  if (!isLoggedIn) {
-    window.location.href = "index.html";
-    return;
-  }
 
   const savedDecks = localStorage.getItem("sunflowerDecks");
   if (savedDecks) {
@@ -84,6 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const newDeckModal = document.getElementById("newDeckModal");
   const newCardModal = document.getElementById("newCardModal");
+  const createNewDeckBtn = document.getElementById("createNewDeckBtn");
+  const openNewDeckModalBtn = document.getElementById("openNewDeckModalBtn");
 
   let activeDeckId = null;
   let currentCardIndex = 0;
@@ -185,10 +183,12 @@ document.addEventListener("DOMContentLoaded", () => {
     currentCardIndex++;
     loadCard();
   });
+
   document.getElementById("btnHard").addEventListener("click", () => {
     currentCardIndex++;
     loadCard();
   });
+
   document.getElementById("btnEasy").addEventListener("click", () => {
     currentCardIndex++;
     loadCard();
@@ -208,13 +208,21 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("startStudyBtn")
     .addEventListener("click", startStudy);
 
-  document
-    .getElementById("openNewDeckModalBtn")
-    .addEventListener("click", () => {
+  if (createNewDeckBtn) {
+    createNewDeckBtn.addEventListener("click", () => {
       document.getElementById("deckTitleInput").value = "";
       document.getElementById("deckIconInput").value = "🪴";
       newDeckModal.classList.add("active");
     });
+  }
+
+  if (openNewDeckModalBtn) {
+    openNewDeckModalBtn.addEventListener("click", () => {
+      document.getElementById("deckTitleInput").value = "";
+      document.getElementById("deckIconInput").value = "🪴";
+      newDeckModal.classList.add("active");
+    });
+  }
 
   document.getElementById("closeDeckModalBtn").addEventListener("click", () => {
     newDeckModal.classList.remove("active");
