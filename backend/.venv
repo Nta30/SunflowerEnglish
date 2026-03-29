@@ -1,5 +1,0 @@
-SECRET_KEY=sunflower-secret-key-2026
-JWT_SECRET_KEY=jwt-sunflower-key-secret
-DB_SERVER=LAPTOP-HOAKR68B\SQLEXPRESS
-DB_NAME=Sunflower
-DB_DRIVER=ODBC Driver 17 for SQL Server 
