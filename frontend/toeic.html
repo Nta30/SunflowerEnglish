@@ -9,43 +9,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
     <link rel="stylesheet" href="./css/toeic.css" />
   </head>
   <body>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href = 'index.html'">
-        🌻 Sunflower
-      </div>
-      <ul class="nav-links">
-        <li><a href="index.html">Trang chủ</a></li>
-        <li>
-          <a href="toeic.html" style="color: var(--primary-hover)"
-            >Luyện TOEIC</a
-          >
-        </li>
-        <li><a href="dictionary.html">Từ điển</a></li>
-        <li><a href="flashcard.html">Flashcard</a></li>
-      </ul>
-      <div class="nav-auth">
-        <div class="user-menu" id="userMenu">
-          <div class="user-profile-btn">
-            <img
-              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
-              alt="Avatar"
-              class="avatar"
-            />
-            <span>Nắng Mới</span>
-            <span class="arrow">▼</span>
-          </div>
-          <ul class="dropdown-content">
-            <li><a href="#">⚙️ Cài đặt</a></li>
-            <li>
-              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div data-component="navbar"></div>
+    <div data-component="auth_modal"></div>
+    <div data-component="toast"></div>
 
     <div class="toeic-layout">
       <aside class="sidebar" id="mainSidebar">
@@ -190,11 +160,7 @@
           <p>Listening: <strong class="lc-color">410</strong></p>
           <p>Reading: <strong class="rc-color">410</strong></p>
         </div>
-        <button
-          class="btn-primary"
-          id="reviewBtn"
-          style="margin-top: 20px; width: 100%"
-        >
+        <button class="btn-primary w-100 mt-3" id="reviewBtn">
           Xem chi tiết & Chữa lỗi 📝
         </button>
       </div>
@@ -213,6 +179,6 @@
       </div>
     </div>
 
-    <script src="./js/toeic.js"></script>
+    <script type="module" src="./js/toeic.js"></script>
   </body>
 </html>

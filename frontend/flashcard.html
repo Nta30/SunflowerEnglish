@@ -9,40 +9,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
     <link rel="stylesheet" href="./css/flashcard.css" />
   </head>
   <body>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href = 'index.html'">
-        🌻 Sunflower
-      </div>
-      <ul class="nav-links">
-        <li><a href="index.html">Trang chủ</a></li>
-        <li><a href="toeic.html">Luyện TOEIC</a></li>
-        <li><a href="dictionary.html">Từ điển</a></li>
-        <li><a href="#" style="color: var(--primary-hover)">Flashcard</a></li>
-      </ul>
-      <div class="nav-auth">
-        <div class="user-menu" id="userMenu">
-          <div class="user-profile-btn">
-            <img
-              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
-              alt="Avatar"
-              class="avatar"
-            />
-            <span>Nắng Mới</span>
-            <span class="arrow">▼</span>
-          </div>
-          <ul class="dropdown-content">
-            <li><a href="#">⚙️ Cài đặt tài khoản</a></li>
-            <li><a href="#">❓ Trợ giúp</a></li>
-            <li>
-              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div data-component="navbar"></div>
+    <div data-component="auth_modal"></div>
+    <div data-component="toast"></div>
 
     <main class="flashcard-main">
       <div id="deckListView">
@@ -114,62 +87,28 @@
           <h2>Tạo chậu cây mới 🌱</h2>
         </div>
         <form id="newDeckForm" class="auth-form">
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 15px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Tên bộ từ vựng</label
-            >
+          <div class="modal-form-group">
+            <label class="modal-label">Tên bộ từ vựng</label>
             <input
               type="text"
               id="deckTitleInput"
+              class="modal-input"
               placeholder="Ví dụ: Từ vựng TOEIC Part 5..."
               required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-              "
             />
           </div>
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 25px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Icon (Emoji)</label
-            >
+          <div class="modal-form-group-lg">
+            <label class="modal-label">Icon (Emoji)</label>
             <input
               type="text"
               id="deckIconInput"
+              class="modal-input"
               value="🪴"
               required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-                font-size: 20px;
-              "
+              style="font-size: 20px;"
             />
           </div>
-          <button type="submit" class="btn-primary" style="width: 100%">
+          <button type="submit" class="btn-primary w-100">
             Gieo hạt ngay
           </button>
         </form>
@@ -183,116 +122,48 @@
           <h2>Thêm từ vựng mới 📝</h2>
         </div>
         <form id="newCardForm" class="auth-form">
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 15px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Từ vựng (Tiếng Anh)</label
-            >
+          <div class="modal-form-group">
+            <label class="modal-label">Từ vựng (Tiếng Anh)</label>
             <input
               type="text"
               id="cardFrontInput"
+              class="modal-input"
               required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-              "
             />
           </div>
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 15px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Nghĩa (Tiếng Việt)</label
-            >
+          <div class="modal-form-group">
+            <label class="modal-label">Nghĩa (Tiếng Việt)</label>
             <input
               type="text"
               id="cardBackInput"
+              class="modal-input"
               required
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-              "
             />
           </div>
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 15px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Phiên âm (Tùy chọn)</label
-            >
+          <div class="modal-form-group">
+            <label class="modal-label">Phiên âm (Tùy chọn)</label>
             <input
               type="text"
               id="cardPhoneticInput"
+              class="modal-input"
               placeholder="/.../"
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-              "
             />
           </div>
-          <div
-            class="input-group"
-            style="text-align: left; margin-bottom: 25px"
-          >
-            <label
-              style="
-                display: block;
-                font-weight: bold;
-                margin-bottom: 8px;
-                color: var(--text-color);
-              "
-              >Ví dụ (Tùy chọn)</label
-            >
+          <div class="modal-form-group-lg">
+            <label class="modal-label">Ví dụ (Tùy chọn)</label>
             <input
               type="text"
               id="cardExampleInput"
-              style="
-                width: 100%;
-                padding: 12px;
-                border-radius: 12px;
-                border: 2px solid #e0e0e0;
-                font-family: &quot;Nunito&quot;;
-              "
+              class="modal-input"
             />
           </div>
-          <button type="submit" class="btn-primary" style="width: 100%">
+          <button type="submit" class="btn-primary w-100">
             Lưu thẻ bài
           </button>
         </form>
       </div>
     </div>
 
-    <script src="./js/flashcard.js"></script>
+    <script type="module" src="./js/flashcard.js"></script>
   </body>
 </html>

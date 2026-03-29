@@ -1,3 +1,6 @@
+import { initApp } from "./core.js";
+import { isLoggedIn } from "./auth.js";
+
 const mockTests = [
   {
     id: 1,
@@ -102,17 +105,17 @@ function renderLibrary(filterText) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("isLoggedIn");
-      window.location.href = "index.html";
-    });
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp();
+  if (!isLoggedIn()) {
+    window.location.href = "index.html";
+    return;
   }
+
+  document.addEventListener("auth:logout", () => {
+    window.location.href = "index.html";
+  });
+
 
   const tabs = document.querySelectorAll(".sidebar-menu li");
   const panes = document.querySelectorAll(".tab-pane");
