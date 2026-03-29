@@ -1,3 +1,6 @@
+import { initApp } from "./core.js";
+import { isLoggedIn } from "./auth.js";
+
 const defaultDecks = [
   {
     id: 1,
@@ -41,8 +44,8 @@ const defaultDecks = [
 
 let myDecks = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp();
 
   const savedDecks = localStorage.getItem("sunflowerDecks");
   if (savedDecks) {
@@ -52,14 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
     saveDecks();
   }
 
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.removeItem("isLoggedIn");
+  document.addEventListener("auth:logout", () => {
       window.location.href = "index.html";
-    });
-  }
+  });
 
   const deckListView = document.getElementById("deckListView");
   const deckDetailView = document.getElementById("deckDetailView");

@@ -1,25 +1,10 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const navLoginBtn = document.getElementById("navLoginBtn");
-  const userMenu = document.getElementById("userMenu");
-  const logoutBtn = document.getElementById("logoutBtn");
+import { initApp } from "./core.js";
+import { isLoggedIn } from "./auth.js";
+import { showToast } from "./ui.js";
 
-  if (isLoggedIn) {
-    if (navLoginBtn) navLoginBtn.style.display = "none";
-    if (userMenu) userMenu.style.display = "block";
-  } else {
-    if (navLoginBtn) navLoginBtn.style.display = "inline-block";
-    if (userMenu) userMenu.style.display = "none";
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      localStorage.removeItem("isLoggedIn");
-      window.location.href = "index.html";
-    });
-  }
-
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp();
+  
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
   const welcomeState = document.getElementById("welcomeState");
@@ -38,34 +23,40 @@ document.addEventListener("DOMContentLoaded", () => {
     resultState.style.display = "block";
   }
 
-  searchBtn.addEventListener("click", performSearch);
+  if (searchBtn) searchBtn.addEventListener("click", performSearch);
 
-  searchInput.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      performSearch();
-    }
-  });
+  if (searchInput) {
+    searchInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        performSearch();
+      }
+    });
+  }
 
-  audioBtn.addEventListener("click", () => {
-    const utterance = new SpeechSynthesisUtterance(wordTitle.innerText);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
-  });
+  if (audioBtn) {
+    audioBtn.addEventListener("click", () => {
+      const utterance = new SpeechSynthesisUtterance(wordTitle.innerText);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+    });
+  }
 
-  saveWordBtn.addEventListener("click", () => {
-    if (!isLoggedIn) {
-      alert("Bạn cần đăng nhập để lưu từ vựng vào Flashcard nhé! 🌱");
-      return;
-    }
+  if (saveWordBtn) {
+    saveWordBtn.addEventListener("click", () => {
+      if (!isLoggedIn()) {
+        showToast("Bạn cần đăng nhập để lưu từ vựng vào Flashcard nhé! 🌱", "warning");
+        return;
+      }
 
-    if (saveWordBtn.innerText === "❤️") {
-      saveWordBtn.innerText = "💔";
-      saveWordBtn.style.backgroundColor = "#F5F5F5";
-      saveWordBtn.style.color = "#9E9E9E";
-    } else {
-      saveWordBtn.innerText = "❤️";
-      saveWordBtn.style.backgroundColor = "#FFEBEE";
-      saveWordBtn.style.color = "#D32F2F";
-    }
-  });
+      if (saveWordBtn.innerText === "❤️") {
+        saveWordBtn.innerText = "💔";
+        saveWordBtn.style.backgroundColor = "#F5F5F5";
+        saveWordBtn.style.color = "#9E9E9E";
+      } else {
+        saveWordBtn.innerText = "❤️";
+        saveWordBtn.style.backgroundColor = "#FFEBEE";
+        saveWordBtn.style.color = "#D32F2F";
+      }
+    });
+  }
 });

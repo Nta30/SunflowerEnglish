@@ -9,6 +9,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/components.css" />
   </head>
   <body>
     <div data-component="navbar"></div>
@@ -125,56 +126,8 @@
       </div>
     </section>
 
-    <div id="authModal" class="modal-overlay">
-      <div class="modal-content">
-        <span class="close-btn" id="closeModalBtn">&times;</span>
-
-        <div class="modal-header">
-          <h2 id="modalTitle">Đăng nhập</h2>
-          <p id="modalDesc">Chào mừng bạn trở lại vườn hoa! 🌻</p>
-        </div>
-
-        <form id="authForm" class="auth-form">
-          <div class="input-group">
-            <input id="Username" type="text" placeholder="Username" required />
-          </div>
-          <div class="input-group register-element" style="display: none">
-            <input id="Fullname" type="text" placeholder="Họ tên" required />
-          </div>
-          <div class="input-group register-element" style="display: none">
-            <input id="Email" type="email" placeholder="Email" required />
-          </div>
-          <div class="input-group">
-            <input
-              id="Password"
-              type="password"
-              placeholder="Mật khẩu"
-              required
-            />
-          </div>
-          <div class="input-group register-element" style="display: none">
-            <input
-              id="ConfirmPassword"
-              type="password"
-              placeholder="Nhập lại mật khẩu"
-            />
-          </div>
-
-          <button type="submit" class="btn-primary auth-submit" id="submitBtn">
-            Đăng nhập
-          </button>
-        </form>
-
-        <div class="modal-footer">
-          <span id="togglePrompt">Bạn chưa có tài khoản?</span>
-          <a href="#" id="toggleAuthLink" class="toggle-link"
-            >Đăng ký ngay 🌱</a
-          >
-        </div>
-      </div>
-    </div>
-
-    <div id="toastContainer"></div>
+    <div data-component="auth_modal"></div>
+    <div data-component="toast"></div>
 
     <script type="module" src="./js/script.js"></script>
   </body>
