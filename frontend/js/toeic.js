@@ -1,421 +1,801 @@
 import { initApp } from "./core.js";
 import { isLoggedIn } from "./auth.js";
+import { getExams, getExamDetail, submitExam, getExamHistory, getSessionDetail } from "./api.js";
 
-const mockTests = [
-  {
-    id: 1,
-    name: "ETS 2024 - Test 1",
-    tags: "Full Test • 200 câu",
-    status: "new",
-    statusText: "Chưa làm",
-  },
-  {
-    id: 2,
-    name: "Hacker TOEIC 3",
-    tags: "Mini Test • 50 câu",
-    status: "prog",
-    statusText: "Đang làm 45%",
-  },
-  {
-    id: 3,
-    name: "ETS 2023 - Test 5",
-    tags: "Full Test • 200 câu",
-    status: "done",
-    statusText: "Đã xong: 820",
-  },
-  {
-    id: 4,
-    name: "Economy Vol 5",
-    tags: "Full Test • 200 câu",
-    status: "new",
-    statusText: "Chưa làm",
-  },
-];
+// ============================================================
+// APP STATE
+// ============================================================
+let engine = null;
+let currentExamId = null;
+let allExams = [];
+let examHistory = [];
+let pendingExamId = null;
+let lastResultSessionId = null;
+let countdownInterval = null;
+let isReviewMode = false; // Cờ theo dõi chế độ xem lại lịch sử
 
-const mockHistory = [
-  {
-    date: "15/11/2025",
-    name: "ETS 2023 - Test 5",
-    score: "820",
-    time: "115:30",
-  },
-  {
-    date: "10/11/2025",
-    name: "Mini Test LC Part 1,2",
-    score: "85/100",
-    time: "25:00",
-  },
-  {
-    date: "02/11/2025",
-    name: "ETS 2023 - Test 1",
-    score: "710",
-    time: "120:00",
-  },
-];
+// ============================================================
+// EXAM ENGINE
+// ============================================================
+class ExamEngine {
+  constructor(examData, selectedParts, isFullTest, customMinutes, isReviewMode = false) {
+    this.examData = examData;
+    this.isFullTest = isFullTest;
+    this.isReviewMode = isReviewMode;
 
-let testTimerInterval;
-let remainingSeconds = 7200;
+    // Lọc câu hỏi theo part đã chọn
+    this.questions = (isFullTest || !selectedParts.length)
+      ? [...examData.questions]
+      : examData.questions.filter(q => selectedParts.includes(q.TenPart));
 
-function startTimer() {
-  clearInterval(testTimerInterval);
-  remainingSeconds = 7200;
-  testTimerInterval = setInterval(() => {
-    if (remainingSeconds <= 0) {
-      clearInterval(testTimerInterval);
-      document.getElementById("resultModal").classList.add("active");
-      return;
+    this.answers = {};           // { MaCauHoi: MaDapAn }
+    this.items = this._buildItems();
+    this.currentItemIndex = 0;
+    this.timeSeconds = isFullTest
+      ? (examData.ThoiGianLam || 120) * 60
+      : (customMinutes || 30) * 60;
+
+    this._timerInterval = null;
+    this.onTimerTick = null;
+    this.onTimeUp = null;
+    this.onItemChange = null;
+  }
+
+  _buildItems() {
+    const items = [];
+    const seenGroups = new Set();
+    for (const q of this.questions) {
+      if (q.MaNhom) {
+        if (!seenGroups.has(q.MaNhom)) {
+          seenGroups.add(q.MaNhom);
+          const groupQs = this.questions.filter(x => x.MaNhom === q.MaNhom);
+          items.push({ type: "group", nhom: q.nhom, questions: groupQs });
+        }
+      } else {
+        items.push({ type: "single", questions: [q] });
+      }
     }
-    remainingSeconds--;
-    let m = Math.floor(remainingSeconds / 60)
-      .toString()
-      .padStart(2, "0");
-    let s = (remainingSeconds % 60).toString().padStart(2, "0");
-    document.getElementById("countdownTimer").innerText = `${m}:${s}`;
+    return items;
+  }
+
+  get currentItem() { return this.items[this.currentItemIndex]; }
+  get totalItems()  { return this.items.length; }
+  get totalQs()     { return this.questions.length; }
+  get answeredQs()  { return Object.keys(this.answers).length; }
+
+  isListening(item) {
+    return (item ?? this.currentItem)?.questions[0]?.TenPart <= 4;
+  }
+
+  canGoNext() { return this.currentItemIndex < this.items.length - 1; }
+  // Cho phép quay về cả Listening khi trong chế độ xem lại lịch sử
+  canGoPrev() { return (this.isReviewMode || !this.isListening()) && this.currentItemIndex > 0; }
+
+  goNext() {
+    if (!this.canGoNext()) return false;
+    this.currentItemIndex++;
+    this.onItemChange?.();
+    return true;
+  }
+  goPrev() {
+    if (!this.canGoPrev()) return;
+    this.currentItemIndex--;
+    this.onItemChange?.();
+  }
+
+  goToSTT(stt) {
+    const idx = this.items.findIndex(item => item.questions.some(q => q.STT === stt));
+    // Ở chế độ thi, chặn nhảy câu phần Listening. Ở chế độ Review thì cho phép tự do.
+    if (idx === -1 || (!this.isReviewMode && this.isListening(this.items[idx]))) return false;
+    this.currentItemIndex = idx;
+    this.onItemChange?.();
+    return true;
+  }
+
+  recordAnswer(questionId, answerId) {
+    this.answers[String(questionId)] = answerId;
+  }
+  getAnswer(questionId) { return this.answers[String(questionId)]; }
+
+  startTimer() {
+    this._timerInterval = setInterval(() => {
+      this.timeSeconds--;
+      this.onTimerTick?.(this.timeSeconds);
+      if (this.timeSeconds <= 0) { this.stopTimer(); this.onTimeUp?.(); }
+    }, 1000);
+  }
+  stopTimer() { clearInterval(this._timerInterval); }
+
+  formatTime(s) {
+    s = Math.max(0, s);
+    return `${Math.floor(s / 60).toString().padStart(2, "0")}:${(s % 60).toString().padStart(2, "0")}`;
+  }
+
+  buildSubmitPayload() {
+    const parts = this.isFullTest ? [] : [...new Set(this.questions.map(q => q.TenPart))];
+    return { answers: this.answers, selectedParts: parts };
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp();
+  if (!isLoggedIn()) { window.location.href = "index.html"; return; }
+  document.addEventListener("auth:logout", () => { window.location.href = "index.html"; });
+
+  initTabs();
+  initFilterBtns();
+  initModeModal();
+  initExamControls();
+  initResultModal();
+
+  await Promise.all([loadLibrary(), loadHistory()]);
+  updateDashboard();
+});
+
+// ============================================================
+// TABS
+// ============================================================
+function initTabs() {
+  document.querySelectorAll(".sidebar-menu li").forEach(tab => {
+    tab.addEventListener("click", function () {
+      document.querySelectorAll(".sidebar-menu li").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab-pane").forEach(p => { p.classList.remove("active"); p.style.display = "none"; });
+      this.classList.add("active");
+      const pane = document.getElementById(this.dataset.tab);
+      if (pane) { pane.classList.add("active"); pane.style.display = "block"; }
+      window.scrollTo(0, 0);
+    });
+  });
+}
+
+// ============================================================
+// LIBRARY & HISTORY
+// ============================================================
+async function loadLibrary() {
+  try {
+    const data = await getExams();
+    allExams = Array.isArray(data) ? data : [];
+  } catch { allExams = []; }
+  renderLibrary("all");
+}
+
+function renderLibrary(filter) {
+  const grid = document.getElementById("testGrid");
+  if (!grid) return;
+  let list = allExams;
+  if (filter === "full") list = allExams.filter(e => (e.SoCau || 0) >= 100);
+  else if (filter === "new") list = allExams.filter(e => e.TrangThai === "new");
+
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state">🌱 Chưa có đề thi nào.</div>`; return;
+  }
+  
+  grid.innerHTML = list.map(exam => {
+    const sc = `status-${exam.TrangThai || "new"}`;
+    return `
+      <div class="lib-card">
+        <span class="lib-status ${sc}">${exam.TrangThaiText || "Chưa làm"}</span>
+        <h3>${exam.TenDeThi}</h3>
+        <p class="lib-tags">${exam.MoTa ? exam.MoTa : ""}</p>
+        <button class="lib-action" onclick="openModeModal(${exam.MaDeThi})">
+          ${exam.TrangThai === "done" ? "Làm lại" : exam.TrangThai === "prog" ? "Tiếp tục" : "Làm bài ngay"}
+        </button>
+      </div>`;
+  }).join("");
+}
+
+function initFilterBtns() {
+  document.querySelectorAll(".filter-btn[data-filter]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      document.querySelectorAll(".filter-btn[data-filter]").forEach(b => b.classList.remove("active"));
+      e.currentTarget.classList.add("active");
+      renderLibrary(e.currentTarget.dataset.filter);
+    });
+  });
+}
+
+async function loadHistory() {
+  try {
+    const data = await getExamHistory();
+    examHistory = Array.isArray(data) ? data : [];
+  } catch { examHistory = []; }
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  if (!list) return;
+  if (!examHistory.length) {
+    list.innerHTML = `<div class="empty-state">🌱 Chưa có lịch sử nào. Hãy làm bài đầu tiên!</div>`; return;
+  }
+  list.innerHTML = examHistory.map(item => {
+    const date = item.ThoiGianKetThuc ? new Date(item.ThoiGianKetThuc).toLocaleDateString("vi-VN") : "--";
+    const dur = calcDuration(item.ThoiGianBatDau, item.ThoiGianKetThuc);
+    return `
+      <div class="history-item">
+        <div class="history-info">
+          <h4>${item.TenDeThi}</h4>
+          <p>Ngày: ${date} • Thời gian làm: ${dur}</p>
+          <div class="history-stats">
+            <span class="correct-badge">✓ ${item.SoCauDung || 0} đúng</span>
+            <span class="wrong-badge">✗ ${item.SoCauSai || 0} sai</span>
+          </div>
+        </div>
+        <div class="history-right">
+          <div class="history-score">${item.DiemSo || 0}</div>
+          <button class="btn-history-detail" onclick="openHistoryDetail(${item.MaPhien})">Xem chi tiết</button>
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function calcDuration(start, end) {
+  if (!start || !end) return "--";
+  const ms = new Date(end) - new Date(start);
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  return `${m}p${s.toString().padStart(2, "0")}s`;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function updateDashboard() {
+  renderHistory();
+  
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  
+  // Nếu chưa có lịch sử làm bài
+  if (!examHistory || !examHistory.length) { 
+    ["statBest", "statAvg", "statLowest", "statCount"].forEach(id => set(id, "--")); 
+    set("lcScoreLabel", "-- / 495");
+    set("rcScoreLabel", "-- / 495");
+    document.getElementById("lcBar").style.width = "0%";
+    document.getElementById("rcBar").style.width = "0%";
+    return; 
+  }
+
+  // Lọc ra các bài đã nộp (có tổng điểm)
+  const scores = examHistory.map(h => h.DiemSo || 0);
+  const lcScores = examHistory.map(h => h.DiemLC || 0);
+  const rcScores = examHistory.map(h => h.DiemRC || 0);
+
+  // 1. Cập nhật 4 thẻ Stats tổng quan
+  set("statBest", Math.max(...scores));
+  set("statLowest", Math.min(...scores));
+  set("statAvg", Math.round(scores.reduce((a, b) => a + b, 0) / scores.length));
+  set("statCount", examHistory.length);
+
+  // 2. Tính điểm trung bình kỹ năng LC & RC
+  const avgLC = Math.round(lcScores.reduce((a, b) => a + b, 0) / lcScores.length);
+  const avgRC = Math.round(rcScores.reduce((a, b) => a + b, 0) / rcScores.length);
+
+  set("lcScoreLabel", `${avgLC} / 495`);
+  set("rcScoreLabel", `${avgRC} / 495`);
+
+  // 3. Chạy animation thanh tiến trình
+  // Dùng setTimeout để đảm bảo CSS Transition hoạt động mượt mà
+  setTimeout(() => {
+    const lcBar = document.getElementById("lcBar");
+    const rcBar = document.getElementById("rcBar");
+    // Chiếm % so với điểm tối đa là 495
+    if (lcBar) lcBar.style.width = `${(avgLC / 495) * 100}%`;
+    if (rcBar) rcBar.style.width = `${(avgRC / 495) * 100}%`;
+  }, 100);
+}
+
+// ============================================================
+// START EXAM MODAL
+// ============================================================
+window.openModeModal = function (examId) {
+  pendingExamId = examId;
+  const exam = allExams.find(e => e.MaDeThi === examId);
+  if (!exam) return;
+  const el = id => document.getElementById(id);
+  el("modeModalExamName").textContent = exam.TenDeThi;
+  el("fullTimeLabel").textContent = `${exam.ThoiGianLam || 120} phút`;
+  el("partCheckboxes").innerHTML = [1,2,3,4,5,6,7].map(p =>
+    `<label class="part-check-label"><input type="checkbox" value="${p}" class="part-checkbox" checked />Part ${p}</label>`
+  ).join("");
+  document.querySelector('input[name="examMode"][value="full"]').checked = true;
+  el("partSelectorArea").style.display = "none";
+  el("modeModal").classList.add("active");
+};
+
+function initModeModal() {
+  document.querySelectorAll('input[name="examMode"]').forEach(r => {
+    r.addEventListener("change", () => {
+      const isPart = document.querySelector('input[name="examMode"]:checked')?.value === "part";
+      document.getElementById("partSelectorArea").style.display = isPart ? "block" : "none";
+    });
+  });
+  document.getElementById("cancelModeBtn")?.addEventListener("click", () =>
+    document.getElementById("modeModal").classList.remove("active")
+  );
+  document.getElementById("startExamBtn")?.addEventListener("click", startExam);
+}
+
+async function startExam() {
+  const mode = document.querySelector('input[name="examMode"]:checked')?.value;
+  const isFullTest = mode === "full";
+  let selectedParts = [], customMinutes = 30;
+
+  if (!isFullTest) {
+    selectedParts = [...document.querySelectorAll(".part-checkbox:checked")].map(cb => parseInt(cb.value));
+    if (!selectedParts.length) { alert("Vui lòng chọn ít nhất 1 Part!"); return; }
+    customMinutes = parseInt(document.getElementById("customTimeInput").value) || 30;
+  }
+
+  document.getElementById("modeModal").classList.remove("active");
+  isReviewMode = false;
+  
+  // UI setups for Testing
+  document.getElementById("submitExamBtn").style.display = "block";
+  document.getElementById("timerWidgetWrap").style.display = "block";
+  document.getElementById("examNavActions").style.display = "none";
+
+  showExamArea();
+  document.getElementById("questionDisplay").innerHTML =
+    `<div class="loading-state"><div class="loading-spinner"></div><p>Đang tải đề thi...</p></div>`;
+
+  try {
+    const examData = await getExamDetail(pendingExamId);
+    if (!examData?.questions) throw new Error("No data");
+
+    currentExamId = pendingExamId;
+    engine = new ExamEngine(examData, selectedParts, isFullTest, customMinutes, false);
+    document.getElementById("examNameDisplay").textContent = examData.TenDeThi;
+    document.getElementById("examModeBadge").textContent = isFullTest
+      ? "Full Test" : `Part ${selectedParts.join(", ")}`;
+
+    engine.onItemChange = renderCurrentItem;
+    engine.onTimerTick = updateTimer;
+    engine.onTimeUp = () => autoSubmit();
+
+    buildPalette();
+    renderCurrentItem();
+    engine.startTimer();
+    updateTimer(engine.timeSeconds);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("questionDisplay").innerHTML =
+      `<div class="empty-state">❌ Không thể tải đề thi. Vui lòng thử lại.</div>`;
+  }
+}
+
+// ============================================================
+// EXAM AREA SHOW/HIDE
+// ============================================================
+function showExamArea() {
+  document.getElementById("toeicLayout").style.display = "none";
+  document.getElementById("examArea").style.display = "flex";
+  window.scrollTo(0, 0);
+}
+
+function hideExamArea() {
+  document.getElementById("examArea").style.display = "none";
+  document.getElementById("toeicLayout").style.display = "flex";
+}
+
+// ============================================================
+// RENDER QUESTION / GROUP
+// ============================================================
+function renderCurrentItem() {
+  if (!engine) return;
+  const item = engine.currentItem;
+  if (!item) return;
+
+  const isLC = engine.isListening();
+  const ws = document.getElementById("examWorkspace");
+  const zone1 = document.getElementById("examZone1");
+  const zone3 = document.getElementById("examZone3");
+
+  // Workspace layout class
+  // Khi Xem lại lịch sử, ép dùng chung layout của reading để luôn có cột Palette (Zone 3) bên phải
+  ws.className = "exam-workspace " + ((isLC && !engine.isReviewMode) ? "mode-listening" : "mode-reading");
+
+  // Zone 1: Images
+  const images = getItemImages(item);
+  if (images.length) {
+    document.getElementById("zone1Inner").innerHTML = images
+      .map(url => `<img src="${url}" alt="Hình câu hỏi" loading="lazy" />`)
+      .join("");
+    zone1.style.display = "flex";
+    ws.classList.add("has-image");
+  } else {
+    zone1.style.display = "none";
+    ws.classList.remove("has-image");
+  }
+
+  // Zone 3 & Audio
+  if (engine.isReviewMode) {
+    // Review mode: Hiện Palette cho mọi kĩ năng, ẩn thanh đếm Listening HUD
+    zone3.style.display = "flex";
+    hideListeningHUD();
+    stopAudio(); // Chặn audio ẩn tự động
+    
+    // Nút Prev / Next
+    const prevBtn = document.getElementById("prevItemBtn");
+    const nextBtn = document.getElementById("nextItemBtn");
+    if(prevBtn) prevBtn.disabled = !engine.canGoPrev();
+    if(nextBtn) nextBtn.disabled = !engine.canGoNext();
+  } else {
+    // Test mode
+    if (isLC) {
+      zone3.style.display = "none";
+      showListeningHUD(item);
+      const audioUrl = item.nhom?.AudioURL || item.questions[0].AudioURL;
+      playAudio(audioUrl);
+    } else {
+      zone3.style.display = "flex";
+      hideListeningHUD();
+      stopAudio();
+    }
+  }
+
+  updatePaletteCurrent();
+  renderQuestionDisplay(item, engine.isReviewMode);
+}
+
+function getItemImages(item) {
+  if (item.nhom?.images?.length) return item.nhom.images.map(i => i.ImgURL).filter(Boolean);
+  if (item.questions[0].ImgURL) return [item.questions[0].ImgURL];
+  return [];
+}
+
+function renderQuestionDisplay(item, isReview) {
+  const container = document.getElementById("questionDisplay");
+  let html = "";
+
+  // Nếu trong chế độ Review của Listening, bơm Audio native ra để người dùng tự do nghe
+  if (isReview && engine.isListening(item)) {
+    const audioUrl = item.nhom?.AudioURL || item.questions[0].AudioURL;
+    if (audioUrl) {
+      html += `<audio controls src="${audioUrl}" class="review-audio-player" style="margin-bottom: 24px; width: 100%; outline: none; border-radius: 8px;"></audio>`;
+    }
+  }
+
+  // Từng câu hỏi
+  item.questions.forEach(q => {
+    // Nếu reviewMode, truyền DapAnChonId thay cho engine.answers
+    const answered = isReview ? q.DapAnChonId : engine.getAnswer(q.MaCauHoi);
+    html += buildQuestionHTML(q, answered, isReview);
+  });
+
+  container.innerHTML = html;
+
+  // Gắn sự kiện chọn đáp án (chỉ Test mode)
+  if (!isReview) {
+    container.querySelectorAll(".option-label").forEach(label => {
+      label.addEventListener("click", () => {
+        const qId = label.dataset.qid;
+        const aId = parseInt(label.dataset.aid);
+        engine.recordAnswer(qId, aId);
+        container.querySelectorAll(`.option-label[data-qid="${qId}"]`).forEach(l => l.classList.remove("selected"));
+        label.classList.add("selected");
+        updatePaletteAnswered(qId);
+      });
+    });
+  }
+}
+
+function buildQuestionHTML(q, selectedAnswerId, isReview) {
+  const partLabel = `Part ${q.TenPart}`;
+  let html = `
+    <div class="question-card" id="qcard-${q.MaCauHoi}">
+      <div class="question-num">Câu ${q.STT} <span class="question-part-badge">${partLabel}</span></div>
+      <div class="question-text">${q.NoiDung || ""}</div>
+      <div class="options">`;
+
+  (q.dap_an || []).forEach(ans => {
+    let cls = "option-label";
+    const isSelected = String(selectedAnswerId) === String(ans.MaDapAn);
+    
+    if (isReview) {
+      if (ans.IsCorrect) cls += " correct-ans";
+      else if (isSelected && !ans.IsCorrect) cls += " wrong-ans";
+    } else {
+      if (isSelected) cls += " selected";
+    }
+    
+    html += `
+      <label class="${cls}" data-qid="${q.MaCauHoi}" data-aid="${ans.MaDapAn}">
+        <span class="option-key">${ans.KyHieu}</span>
+        <span>${ans.NoiDung || ""}${isReview && isSelected ? " <strong style='font-size:12px;margin-left:4px;'>(Bạn chọn)</strong>" : ""}</span>
+      </label>`;
+  });
+
+  html += `</div>`;
+
+  if (isReview && q.GiaiThich) {
+    html += `<div class="question-explain"><strong>Giải thích:</strong> ${q.GiaiThich}</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// AUDIO (Chỉ dùng khi làm bài thật)
+// ============================================================
+function playAudio(url) {
+  const audio = document.getElementById("examAudio");
+  if (!url || !audio) return;
+  audio.src = url;
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
+  audio.onended = () => handleAudioEnded();
+}
+
+function stopAudio() {
+  const audio = document.getElementById("examAudio");
+  if (!audio) return;
+  audio.pause();
+  audio.src = "";
+  audio.onended = null;
+}
+
+function handleAudioEnded() {
+  let secs = 3;
+  const cd = document.getElementById("lhudCountdown");
+  const num = document.getElementById("countdownNum");
+  if (cd && num) { cd.style.display = "block"; num.textContent = secs; }
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    secs--;
+    if (num) num.textContent = secs;
+    if (secs <= 0) {
+      clearInterval(countdownInterval);
+      if (cd) cd.style.display = "none";
+      const moved = engine?.goNext();
+      if (!moved) checkListeningDone();
+    }
   }, 1000);
 }
 
-function renderLibrary(filterText) {
-  const testGrid = document.getElementById("testGrid");
-  if (!testGrid) return;
-  testGrid.innerHTML = "";
-
-  let filtered = mockTests;
-  if (filterText === "Đề Full") {
-    filtered = mockTests.filter((t) => t.tags.includes("Full"));
-  } else if (filterText === "Chưa làm") {
-    filtered = mockTests.filter((t) => t.status === "new");
-  }
-
-  filtered.forEach((test) => {
-    const card = document.createElement("div");
-    card.className = "lib-card";
-    let btnClass = "btn-start";
-    let btnText = test.status === "prog" ? "Tiếp tục làm" : "Làm bài ngay";
-    if (test.status === "done") {
-      btnClass = "btn-review";
-      btnText = "Xem lại kết quả";
+function checkListeningDone() {
+  if (!engine) return;
+  const hasReading = engine.items.some(item => !engine.isListening(item));
+  if (hasReading) {
+    const readingIdx = engine.items.findIndex(item => !engine.isListening(item));
+    if (readingIdx !== -1) {
+      engine.currentItemIndex = readingIdx;
+      engine.onItemChange?.();
     }
-    card.innerHTML = `
-      <span class="lib-status status-${test.status}">${test.statusText}</span>
-      <h3>${test.name}</h3>
-      <p>${test.tags}</p>
-      <button class="lib-action ${btnClass}" onclick="openTestArea()">${btnText}</button>
-    `;
-    testGrid.appendChild(card);
+  } else {
+    autoSubmit();
+  }
+}
+
+// ============================================================
+// LISTENING HUD (Chỉ Test Mode)
+// ============================================================
+function showListeningHUD(item) {
+  const hud = document.getElementById("listeningHud");
+  if (!hud || !engine) return;
+  hud.style.display = "flex";
+
+  const part = item.questions[0].TenPart;
+  document.getElementById("lhudPartLabel").textContent = `Part ${part}`;
+
+  const lcItems = engine.items.filter(it => engine.isListening(it));
+  const lcIdx = lcItems.indexOf(item);
+  const total = lcItems.length;
+  const current = lcIdx + 1;
+
+  document.getElementById("lhudCurrent").textContent = current;
+  document.getElementById("lhudTotal").textContent = total;
+  document.getElementById("lhudBarFill").style.width = `${(current / total) * 100}%`;
+}
+
+function hideListeningHUD() {
+  const hud = document.getElementById("listeningHud");
+  if (hud) hud.style.display = "none";
+}
+
+// ============================================================
+// PALETTE
+// ============================================================
+function buildPalette() {
+  if (!engine) return;
+  const container = document.getElementById("paletteContainer");
+  if (!container) return;
+
+  const parts = {};
+  engine.questions.forEach(q => {
+    if (!parts[q.TenPart]) parts[q.TenPart] = [];
+    parts[q.TenPart].push(q);
+  });
+
+  container.innerHTML = Object.entries(parts).map(([part, qs]) => `
+    <div class="palette-part-section">
+      <div class="palette-part-label">Part ${part}</div>
+      <div class="palette-grid">
+        ${qs.map(q => `
+          <button class="palette-btn" id="pal-${q.MaCauHoi}" data-stt="${q.STT}"
+            onclick="jumpToQuestion(${q.STT})">${q.STT}</button>
+        `).join("")}
+      </div>
+    </div>`).join("");
+}
+
+window.jumpToQuestion = function (stt) {
+  engine?.goToSTT(stt);
+};
+
+function updatePaletteAnswered(qId) {
+  const q = engine?.questions.find(x => String(x.MaCauHoi) === String(qId));
+  if (!q) return;
+  const btn = document.getElementById(`pal-${q.MaCauHoi}`);
+  if (btn) btn.classList.add("answered");
+}
+
+function updatePaletteCurrent() {
+  if (!engine) return;
+  document.querySelectorAll(".palette-btn").forEach(b => b.classList.remove("current"));
+  engine.currentItem?.questions.forEach(q => {
+    const btn = document.getElementById(`pal-${q.MaCauHoi}`);
+    if (btn) btn.classList.add("current");
   });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await initApp();
-  if (!isLoggedIn()) {
-    window.location.href = "index.html";
-    return;
-  }
+// ============================================================
+// TIMER
+// ============================================================
+function updateTimer(seconds) {
+  const el = document.getElementById("timerDisplay");
+  if (!el || !engine) return;
+  el.textContent = engine.formatTime(seconds);
+  el.className = "timer-display";
+  if (seconds <= 300) el.classList.add("warning");
+  if (seconds <= 60)  el.classList.add("danger");
+}
 
-  document.addEventListener("auth:logout", () => {
-    window.location.href = "index.html";
+// ============================================================
+// EXAM CONTROLS
+// ============================================================
+function initExamControls() {
+  document.getElementById("exitExamBtn")?.addEventListener("click", () => {
+    if (!isReviewMode) {
+      if (!confirm("Thoát sẽ không lưu bài làm. Bạn có chắc?")) return;
+    }
+    const targetTab = isReviewMode ? "history" : "library";
+    engine?.stopTimer();
+    stopAudio();
+    clearInterval(countdownInterval);
+    engine = null;
+    isReviewMode = false;
+    setTab(targetTab);
+    hideExamArea();
   });
 
+  document.getElementById("submitExamBtn")?.addEventListener("click", confirmSubmit);
+  
+  // Navigation for review mode
+  document.getElementById("prevItemBtn")?.addEventListener("click", () => engine?.goPrev());
+  document.getElementById("nextItemBtn")?.addEventListener("click", () => engine?.goNext());
+}
 
-  const tabs = document.querySelectorAll(".sidebar-menu li");
-  const panes = document.querySelectorAll(".tab-pane");
+function confirmSubmit() {
+  if (!confirm(`Bạn đã trả lời ${engine?.answeredQs || 0}/${engine?.totalQs || 0} câu. Nộp bài?`)) return;
+  doSubmit();
+}
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", function () {
-      tabs.forEach((t) => t.classList.remove("active"));
-      panes.forEach((p) => {
-        p.classList.remove("active");
-        p.style.display = "none";
-      });
-      this.classList.add("active");
-      const targetId = this.getAttribute("data-tab");
-      const targetPane = document.getElementById(targetId);
-      if (targetPane) {
-        targetPane.classList.add("active");
-        targetPane.style.display = "block";
-      }
-      window.scrollTo(0, 0);
-    });
+function autoSubmit() {
+  doSubmit();
+}
+
+async function doSubmit() {
+  if (!engine || !currentExamId) return;
+  engine.stopTimer();
+  stopAudio();
+  clearInterval(countdownInterval);
+
+  try {
+    const payload = engine.buildSubmitPayload();
+    const result = await submitExam(currentExamId, payload.answers, payload.selectedParts);
+
+    lastResultSessionId = result.MaPhien;
+    const total = result.TongDiem ?? result.DiemSo ?? 0;
+    const lc = result.DiemLC ?? "--";
+    const rc = result.DiemRC ?? "--";
+
+    const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    set("finalScore", total);
+    set("lcScore", lc);
+    set("rcScore", rc);
+    set("correctCount", `${result.SoCauDung ?? 0} đúng`);
+    set("wrongCount", `${result.SoCauSai ?? 0} sai`);
+    set("skipCount", `${result.SoCauKhongChon ?? 0} bỏ qua`);
+
+    const greetings = ["Xuất sắc! 🏆", "Tuyệt vời! 🎉", "Rất tốt! 👏", "Cố gắng thêm! 💪"];
+    set("resultGreeting", total >= 800 ? greetings[0] : total >= 600 ? greetings[1] : total >= 400 ? greetings[2] : greetings[3]);
+
+    document.getElementById("resultModal").classList.add("active");
+
+    await loadHistory();
+    updateDashboard();
+    await loadLibrary();
+    renderLibrary("all");
+  } catch (e) {
+    console.error(e);
+    alert("Có lỗi khi nộp bài. Vui lòng thử lại.");
+  }
+}
+
+// ============================================================
+// RESULT MODAL & REVIEW HISTORY
+// ============================================================
+function initResultModal() {
+  document.getElementById("closeResultBtn")?.addEventListener("click", () => {
+    document.getElementById("resultModal").classList.remove("active");
+    setTab("library");
+    hideExamArea();
   });
-
-  const filterBtns = document.querySelectorAll(".filter-bar .filter-btn");
-  filterBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      filterBtns.forEach((b) => b.classList.remove("active"));
-      e.target.classList.add("active");
-      renderLibrary(e.target.innerText);
-    });
+  document.getElementById("viewHistoryBtn")?.addEventListener("click", () => {
+    document.getElementById("resultModal").classList.remove("active");
+    if (lastResultSessionId) openHistoryDetail(lastResultSessionId);
   });
-  renderLibrary("Tất cả");
+}
 
-  const historyList = document.getElementById("historyList");
-  if (historyList) {
-    mockHistory.forEach((item, index) => {
-      const row = document.createElement("div");
-      row.className = "history-item";
-      row.innerHTML = `
-        <div class="history-info">
-          <h4>${item.name}</h4>
-          <p>Ngày làm: ${item.date} • Thời gian: ${item.time}</p>
-        </div>
-        <div class="history-score">${item.score}</div>
-        <button class="filter-btn history-detail-btn" data-index="${index}">Xem chi tiết</button>
-      `;
-      historyList.appendChild(row);
-    });
+// Tái sử dụng màn làm bài để review
+window.openHistoryDetail = async function (sessionId) {
+  showExamArea();
+  document.getElementById("questionDisplay").innerHTML = 
+    `<div class="loading-state"><div class="loading-spinner"></div><p>Đang tải chi tiết bài làm...</p></div>`;
 
-    document.querySelectorAll(".history-detail-btn").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const idx = this.getAttribute("data-index");
-        const data = mockHistory[idx];
-        const modal = document.getElementById("historyModal");
-        const content = document.getElementById("historyDetailContent");
-        content.innerHTML = `
-          <p><strong>Bài thi:</strong> ${data.name}</p>
-          <p><strong>Ngày hoàn thành:</strong> ${data.date}</p>
-          <p><strong>Thời gian làm bài:</strong> ${data.time}</p>
-          <p><strong>Điểm số:</strong> <span style="color:var(--accent-color); font-weight:bold">${data.score}</span></p>
-          <p><strong>Listening:</strong> 410/495</p>
-          <p><strong>Reading:</strong> 410/495</p>
-        `;
-        modal.classList.add("active");
-      });
-    });
-  }
+  // UI setups for Review Mode
+  isReviewMode = true;
+  document.getElementById("submitExamBtn").style.display = "none";
+  document.getElementById("timerWidgetWrap").style.display = "none";
+  document.getElementById("examNavActions").style.display = "flex";
 
-  const closeHistoryBtn = document.getElementById("closeHistoryBtn");
-  if (closeHistoryBtn) {
-    closeHistoryBtn.addEventListener("click", () => {
-      document.getElementById("historyModal").classList.remove("active");
-    });
-  }
+  try {
+    const data = await getSessionDetail(sessionId);
 
-  const backToLibraryBtn = document.getElementById("backToLibraryBtn");
-  if (backToLibraryBtn) {
-    backToLibraryBtn.addEventListener("click", () => {
-      clearInterval(testTimerInterval);
-      document.getElementById("mainSidebar").style.display = "block";
-      const libTab = document.querySelector('[data-tab="library"]');
-      if (libTab) libTab.click();
-      window.scrollTo(0, 0);
-    });
-  }
+    const questions = data.chi_tiet;
+    const answeredParts = [...new Set(questions.map(q => q.TenPart))];
 
-  const partsConfig = [
-    {
-      name: "Part 1",
-      start: 1,
-      end: 6,
-      hasImage: true,
-      options: ["A", "B", "C", "D"],
-      instruction: "Look at the picture and listen to the statements.",
-    },
-    {
-      name: "Part 2",
-      start: 7,
-      end: 31,
-      hasImage: false,
-      options: ["A", "B", "C"],
-      instruction: "Mark your answer on your answer sheet.",
-    },
-    {
-      name: "Part 3",
-      start: 32,
-      end: 70,
-      hasImage: false,
-      options: ["A", "B", "C", "D"],
-      instruction: "Listen to the conversation and answer.",
-    },
-    {
-      name: "Part 4",
-      start: 71,
-      end: 100,
-      hasImage: false,
-      options: ["A", "B", "C", "D"],
-      instruction: "Listen to the talk and answer.",
-    },
-    {
-      name: "Part 5",
-      start: 101,
-      end: 130,
-      hasImage: false,
-      options: ["A", "B", "C", "D"],
-      instruction: "Choose the correct answer.",
-    },
-    {
-      name: "Part 6",
-      start: 131,
-      end: 146,
-      hasImage: false,
-      options: ["A", "B", "C", "D"],
-      instruction: "Choose the correct text completion.",
-    },
-    {
-      name: "Part 7",
-      start: 147,
-      end: 200,
-      hasImage: false,
-      options: ["A", "B", "C", "D"],
-      instruction: "Read the passage and answer.",
-    },
-  ];
+    const examData = {
+      TenDeThi: data.TenDeThi || "Chi tiết bài làm",
+      ThoiGianLam: 0,
+      questions: questions
+    };
 
-  const questionsContainer = document.getElementById("questionsContainer");
-  const palette = document.getElementById("questionPalette");
+    engine = new ExamEngine(examData, answeredParts, false, 0, true);
+    
+    document.getElementById("examNameDisplay").textContent = examData.TenDeThi;
+    document.getElementById("examModeBadge").textContent = "Xem Lịch Sử";
 
-  if (questionsContainer && palette) {
-    partsConfig.forEach((pConfig) => {
-      const pNum = pConfig.name.replace("Part ", "");
+    engine.onItemChange = renderCurrentItem;
+    buildPalette();
+    renderCurrentItem();
 
-      const title = document.createElement("div");
-      title.className = "palette-part-title";
-      title.innerText = pConfig.name;
-      palette.appendChild(title);
-
-      const grid = document.createElement("div");
-      grid.className = "palette-grid";
-
-      for (let i = pConfig.start; i <= pConfig.end; i++) {
-        const qCard = document.createElement("div");
-        qCard.className = "question-card";
-        qCard.id = `q-${i}`;
-        qCard.setAttribute("data-part", pNum);
-        qCard.style.display = pNum === "1" ? "block" : "none";
-
-        let htmlContent = "";
-        if (pConfig.hasImage) {
-          htmlContent += `<div class="img-placeholder">Ảnh Câu ${i}</div>`;
-        }
-        htmlContent += `<p class="q-text"><strong>${i}.</strong> ${pConfig.instruction}</p><div class="options">`;
-
-        pConfig.options.forEach((opt) => {
-          htmlContent += `<label class="option"><input type="radio" name="q${i}" value="${opt}" /><span>${opt}. Option ${opt}</span></label>`;
-        });
-        htmlContent += `</div>`;
-        qCard.innerHTML = htmlContent;
-        questionsContainer.appendChild(qCard);
-
-        const btn = document.createElement("button");
-        btn.className = "palette-btn";
-        btn.id = `btn-q-${i}`;
-        btn.innerText = i;
-
-        btn.addEventListener("click", () => {
-          const tabToClick = document.querySelector(
-            `.part-tab[data-part="${pNum}"]`,
-          );
-          if (tabToClick && !tabToClick.classList.contains("active")) {
-            tabToClick.click();
-          }
-
-          setTimeout(() => {
-            const targetCard = document.getElementById(`q-${i}`);
-            if (targetCard) {
-              const y =
-                targetCard.getBoundingClientRect().top + window.scrollY - 150;
-              window.scrollTo({ top: y, behavior: "smooth" });
-              targetCard.classList.add("highlight");
-              setTimeout(() => {
-                targetCard.classList.remove("highlight");
-              }, 1500);
-            }
-          }, 100);
-        });
-        grid.appendChild(btn);
-      }
-      palette.appendChild(grid);
-    });
-  }
-
-  const partTabs = document.querySelectorAll(".part-tab");
-  const passageCol = document.getElementById("passageCol");
-  const passageContent = document.getElementById("passageContent");
-
-  partTabs.forEach((tab) => {
-    tab.addEventListener("click", (e) => {
-      partTabs.forEach((t) => t.classList.remove("active"));
-      e.target.classList.add("active");
-
-      const pNum = e.target.getAttribute("data-part");
-
-      document.querySelectorAll(".question-card").forEach((card) => {
-        if (card.getAttribute("data-part") === pNum) {
-          card.style.display = "block";
-        } else {
-          card.style.display = "none";
-        }
-      });
-
-      if (passageCol) {
-        if (["1", "2", "3", "4", "5"].includes(pNum)) {
-          passageCol.style.display = "none";
-        } else {
-          passageCol.style.display = "block";
-          if (pNum === "6") {
-            passageContent.innerHTML = `<h4>To: All Staff<br />From: Michael Davis<br />Subject: Network Upgrade</h4><p>We regret to inform the staff that as of next week, the employee key card system will not be active.</p>`;
-          } else if (pNum === "7") {
-            passageContent.innerHTML = `<h4>Dear Customer,</h4><p>Thank you for your recent purchase. Please find your invoice attached below.</p>`;
-          }
-        }
-      }
-      window.scrollTo(0, 0);
-    });
-  });
-
-  if (questionsContainer) {
-    questionsContainer.addEventListener("change", function (e) {
-      if (e.target.type === "radio") {
-        const qNum = e.target.name.replace("q", "");
-        const palBtn = document.getElementById(`btn-q-${qNum}`);
-        if (palBtn) {
-          palBtn.classList.add("answered");
-        }
+    // Tô màu Palette phân biệt đúng / sai / bỏ qua
+    engine.questions.forEach(q => {
+      const btn = document.getElementById(`pal-${q.MaCauHoi}`);
+      if (btn) {
+        if (q.IsCorrect) btn.classList.add("correct");
+        else if (q.DapAnChonId) btn.classList.add("wrong");
+        else btn.classList.add("skip");
       }
     });
+
+  } catch (e) {
+    console.error(e);
+    alert("❌ Không thể tải chi tiết. Vui lòng thử lại.");
+    hideExamArea();
+    setTab("history");
+    isReviewMode = false;
   }
-
-  const submitTestBtn = document.getElementById("submitTestBtn");
-  const resultModal = document.getElementById("resultModal");
-  const reviewBtn = document.getElementById("reviewBtn");
-
-  if (submitTestBtn && resultModal) {
-    submitTestBtn.addEventListener("click", () => {
-      if (confirm("Bạn có chắc chắn muốn nộp bài không?")) {
-        clearInterval(testTimerInterval);
-        resultModal.classList.add("active");
-      }
-    });
-  }
-
-  if (reviewBtn) {
-    reviewBtn.addEventListener("click", () => {
-      resultModal.classList.remove("active");
-      submitTestBtn.style.display = "none";
-      document.getElementById("countdownTimer").innerText = "Chế độ xem lại";
-      document.getElementById("countdownTimer").style.color = "#8D6E63";
-      document
-        .querySelectorAll('.options input[type="radio"]')
-        .forEach((r) => (r.disabled = true));
-    });
-  }
-});
-
-window.openTestArea = function () {
-  document.getElementById("mainSidebar").style.display = "none";
-  document.querySelectorAll(".tab-pane").forEach((p) => {
-    p.classList.remove("active");
-    p.style.display = "none";
-  });
-
-  const testArea = document.getElementById("testArea");
-  if (testArea) {
-    testArea.classList.add("active");
-    testArea.style.display = "block";
-  }
-
-  const tabPart1 = document.querySelector('.part-tab[data-part="1"]');
-  if (tabPart1) tabPart1.click();
-
-  window.scrollTo(0, 0);
-  startTimer();
 };
+
+// ============================================================
+// HELPERS
+// ============================================================
+function setTab(tabName) {
+  const tabEl = document.querySelector(`.sidebar-menu li[data-tab="${tabName}"]`);
+  if (tabEl) tabEl.click();
+}

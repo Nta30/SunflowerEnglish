@@ -88,6 +88,8 @@ class PhienLamBai(db.Model):
     SoCauSai = db.Column(db.Integer)
     SoCauKhongChon = db.Column(db.Integer)
     DiemSo = db.Column(db.Integer)
+    DiemLC = db.Column(db.Integer, default=0)
+    DiemRC = db.Column(db.Integer, default=0)
     TrangThaiNop = db.Column(db.Boolean, default=False)
 
     # Quan hệ

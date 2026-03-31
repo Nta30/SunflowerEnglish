@@ -17,10 +17,10 @@ def create_app(config_class=Config):
     jwt.init_app(app)
 
     from app.routes.auth import auth_bp
-    # from app.routes.exam import exam_bp
+    from app.routes.exam import exam_bp
     # from app.routes.flashcard import flashcard_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    # app.register_blueprint(exam_bp, url_prefix='/api/exams')
+    app.register_blueprint(exam_bp, url_prefix='/api/exams')
 
     return app
