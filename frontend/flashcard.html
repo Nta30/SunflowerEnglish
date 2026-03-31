@@ -4,162 +4,237 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flashcard | Sunflower English</title>
+
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@600;700&display=swap"
       rel="stylesheet"
     />
+
     <link rel="stylesheet" href="./css/style.css" />
-    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/components.css">
     <link rel="stylesheet" href="./css/flashcard.css" />
   </head>
   <body>
     <div data-component="navbar"></div>
-    <div data-component="auth_modal"></div>
     <div data-component="toast"></div>
 
     <main class="flashcard-main">
-      <div id="deckListView">
+      <!-- Danh sách bộ từ -->
+      <section id="deckListView">
         <div class="deck-header">
-          <h1>Vườn Từ Vựng 🪴</h1>
-          <button class="btn-primary" id="openNewDeckModalBtn">
-            Gieo hạt mới 🌱
-          </button>
-        </div>
-        <div class="deck-grid" id="deckGrid"></div>
-      </div>
+          <div>
+            <h1>Vườn Từ Vựng 🪴</h1>
+            <p class="section-subtitle">
+              Chọn một bộ từ hoặc gieo thêm hạt mới cho khu vườn của bạn.
+            </p>
+          </div>
 
-      <div id="deckDetailView" style="display: none">
+          <button class="btn-primary" id="createNewDeckBtn">Gieo hạt mới 🌱</button>
+        </div>
+
+        <div class="deck-grid" id="deckGrid"></div>
+      </section>
+
+      <!-- Chi tiết bộ từ -->
+      <section id="deckDetailView" style="display: none">
         <div class="detail-header">
-          <button class="btn-login" id="backFromDetailBtn">
-            🔙 Quay lại vườn
-          </button>
-          <div class="detail-actions">
-            <button class="btn-login" id="openNewCardModalBtn">
-              Thêm từ mới ➕
-            </button>
-            <button class="btn-primary" id="startStudyBtn">
-              Bắt đầu học 🚀
-            </button>
+          <div class="detail-header-left">
+            <button class="btn-back" id="backToDeckListBtn">🔙 Quay lại vườn</button>
+            <div class="detail-title-wrap">
+              <h2 id="detailDeckTitle">Tên bộ từ</h2>
+              <p id="detailDeckDescription" class="detail-description">Mô tả bộ từ</p>
+            </div>
+          </div>
+
+          <div class="detail-header-right">
+            <span class="detail-count" id="detailCardCount">0 thẻ</span>
+            <button class="btn-secondary" id="startReviewBtn">Ôn tập 📖</button>
+            <button class="btn-primary" id="openAddCardModalBtn">Thêm từ mới ✨</button>
           </div>
         </div>
-        <div class="detail-title-section">
-          <h2 id="detailDeckIcon"></h2>
-          <h2 id="detailDeckTitle"></h2>
-        </div>
-        <div class="card-list" id="cardList"></div>
-      </div>
 
-      <div id="studyView" style="display: none">
-        <div class="study-header">
-          <button class="btn-login" id="backToDetailBtn">🔙 Dừng học</button>
-          <h2 id="currentDeckTitle"></h2>
-          <span class="progress-text" id="studyProgress"></span>
+        <div class="empty-card-box" id="emptyCardBox" style="display: none">
+          <div class="empty-card-icon">📚</div>
+          <h3>Bộ từ này chưa có thẻ nào</h3>
+          <p>Hãy thêm từ mới để bắt đầu xây dựng bộ flashcard của bạn.</p>
         </div>
 
-        <div class="study-container">
-          <div class="flashcard-container">
-            <div class="flashcard" id="studyCard">
-              <div class="card-face card-front">
-                <h3 id="frontWord"></h3>
-                <p class="click-hint">Click để lật thẻ 👆</p>
+        <div class="card-grid" id="cardGrid"></div>
+      </section>
+
+      <!-- Màn hình ôn tập -->
+      <section id="reviewView" style="display: none">
+        <div class="review-header">
+          <div class="detail-header-left">
+            <button class="btn-back" id="closeReviewBtn">🔙 Quay lại bộ từ</button>
+            <div class="detail-title-wrap">
+              <h2 id="reviewDeckTitle">Ôn tập</h2>
+              <p class="detail-description">
+                Bấm vào thẻ hoặc nút lật thẻ để tự kiểm tra kiến thức của bạn.
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-header-right">
+            <span class="detail-count" id="reviewProgress">1 / 1</span>
+          </div>
+        </div>
+
+        <div class="review-card-stage">
+          <div class="review-card-wrapper">
+            <div class="review-card" id="reviewCard">
+              <div class="review-side review-front">
+                <p class="review-label">Mặt trước</p>
+                <h3 id="reviewFrontText">Từ vựng</h3>
+                <p class="review-note">Bấm để lật thẻ 👆</p>
               </div>
-              <div class="card-face card-back">
-                <h3 id="backWord"></h3>
-                <p class="phonetic" id="backPhonetic"></p>
-                <p class="example" id="backExample"></p>
+
+              <div class="review-side review-back">
+                <p class="review-label">Mặt sau</p>
+                <h3 id="reviewBackText">Nghĩa của từ</h3>
+                <p class="review-phonetic" id="reviewPhoneticText"></p>
+                <p class="review-example" id="reviewExampleText"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-controls">
+          <button class="btn-secondary review-control-btn" id="prevReviewBtn">
+            ⬅ Thẻ trước
+          </button>
+          <button class="btn-primary review-control-btn" id="flipReviewBtn">
+            🔄 Lật thẻ
+          </button>
+          <button class="btn-secondary review-control-btn" id="nextReviewBtn">
+            Thẻ sau ➡
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Popup tạo bộ từ -->
+    <div class="modal-overlay" id="createDeckModal">
+      <div class="modal-box modal-large">
+        <div class="modal-header">
+          <h2>Tạo bộ từ mới 🌱</h2>
+          <button type="button" class="modal-close-btn" id="closeCreateDeckModalBtn">✕</button>
+        </div>
+
+        <form id="createDeckForm" class="modal-form">
+          <div class="modal-content-grid">
+            <div class="modal-form-column">
+              <div class="form-group">
+                <label for="deckTitleInput">Tên bộ từ</label>
+                <input
+                  type="text"
+                  id="deckTitleInput"
+                  placeholder="Ví dụ: Từ vựng TOEIC Part 5"
+                  maxlength="100"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="deckDescriptionInput">Mô tả</label>
+                <textarea
+                  id="deckDescriptionInput"
+                  rows="5"
+                  maxlength="255"
+                  placeholder="Nhập mô tả ngắn cho bộ từ của bạn..."
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Chọn biểu tượng</label>
+                <div class="icon-picker" id="deckIconPicker">
+                  <button type="button" class="icon-option active" data-icon="🌱">🌱</button>
+                  <button type="button" class="icon-option" data-icon="🪴">🪴</button>
+                  <button type="button" class="icon-option" data-icon="🌻">🌻</button>
+                  <button type="button" class="icon-option" data-icon="🌼">🌼</button>
+                  <button type="button" class="icon-option" data-icon="📘">📘</button>
+                  <button type="button" class="icon-option" data-icon="✨">✨</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-preview-column">
+              <p class="preview-label">Xem trước</p>
+
+              <div class="deck-card preview-deck-card">
+                <div class="deck-icon" id="previewDeckIcon">🌱</div>
+                <h3 class="deck-title" id="previewDeckTitle">Tên bộ từ của bạn</h3>
+                <p class="deck-description" id="previewDeckDescription">
+                  Mô tả của bộ từ sẽ hiển thị ở đây.
+                </p>
+                <span class="deck-stats">0 thẻ</span>
               </div>
             </div>
           </div>
 
-          <div class="study-controls">
-            <button class="btn-mem btn-forget" id="btnForget">Quên 🥀</button>
-            <button class="btn-mem btn-hard" id="btnHard">Hơi nhớ 🌿</button>
-            <button class="btn-mem btn-easy" id="btnEasy">Đã thuộc 🌻</button>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelCreateDeckBtn">Hủy</button>
+            <button type="submit" class="btn-primary">Tạo bộ từ</button>
           </div>
-        </div>
-      </div>
-    </main>
-
-    <div id="newDeckModal" class="modal-overlay">
-      <div class="modal-content admin-modal">
-        <span class="close-btn" id="closeDeckModalBtn">&times;</span>
-        <div class="modal-header">
-          <h2>Tạo chậu cây mới 🌱</h2>
-        </div>
-        <form id="newDeckForm" class="auth-form">
-          <div class="modal-form-group">
-            <label class="modal-label">Tên bộ từ vựng</label>
-            <input
-              type="text"
-              id="deckTitleInput"
-              class="modal-input"
-              placeholder="Ví dụ: Từ vựng TOEIC Part 5..."
-              required
-            />
-          </div>
-          <div class="modal-form-group-lg">
-            <label class="modal-label">Icon (Emoji)</label>
-            <input
-              type="text"
-              id="deckIconInput"
-              class="modal-input"
-              value="🪴"
-              required
-              style="font-size: 20px;"
-            />
-          </div>
-          <button type="submit" class="btn-primary w-100">
-            Gieo hạt ngay
-          </button>
         </form>
       </div>
     </div>
 
-    <div id="newCardModal" class="modal-overlay">
-      <div class="modal-content admin-modal">
-        <span class="close-btn" id="closeCardModalBtn">&times;</span>
+    <!-- Popup thêm/sửa từ -->
+    <div class="modal-overlay" id="addCardModal">
+      <div class="modal-box">
         <div class="modal-header">
-          <h2>Thêm từ vựng mới 📝</h2>
+          <h2 id="addCardModalTitle">Thêm từ mới ✨</h2>
+          <button type="button" class="modal-close-btn" id="closeAddCardModalBtn">✕</button>
         </div>
-        <form id="newCardForm" class="auth-form">
-          <div class="modal-form-group">
-            <label class="modal-label">Từ vựng (Tiếng Anh)</label>
+
+        <form id="addCardForm" class="modal-form">
+          <div class="form-group">
+            <label for="cardFrontInput">Mặt trước</label>
             <input
               type="text"
               id="cardFrontInput"
-              class="modal-input"
+              placeholder="Ví dụ: Appreciate"
+              maxlength="100"
               required
             />
           </div>
-          <div class="modal-form-group">
-            <label class="modal-label">Nghĩa (Tiếng Việt)</label>
+
+          <div class="form-group">
+            <label for="cardBackInput">Mặt sau</label>
             <input
               type="text"
               id="cardBackInput"
-              class="modal-input"
+              placeholder="Ví dụ: Đánh giá cao, cảm kích"
+              maxlength="255"
               required
             />
           </div>
-          <div class="modal-form-group">
-            <label class="modal-label">Phiên âm (Tùy chọn)</label>
+
+          <div class="form-group">
+            <label for="cardPhoneticInput">Phiên âm</label>
             <input
               type="text"
               id="cardPhoneticInput"
-              class="modal-input"
-              placeholder="/.../"
+              placeholder="Ví dụ: /əˈpriː.ʃi.eɪt/"
+              maxlength="100"
             />
           </div>
-          <div class="modal-form-group-lg">
-            <label class="modal-label">Ví dụ (Tùy chọn)</label>
-            <input
-              type="text"
+
+          <div class="form-group">
+            <label for="cardExampleInput">Ví dụ</label>
+            <textarea
               id="cardExampleInput"
-              class="modal-input"
-            />
+              rows="4"
+              maxlength="300"
+              placeholder="Ví dụ: I really appreciate your help."
+            ></textarea>
           </div>
-          <button type="submit" class="btn-primary w-100">
-            Lưu thẻ bài
-          </button>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancelAddCardBtn">Hủy</button>
+            <button type="submit" class="btn-primary" id="addCardSubmitBtn">Lưu từ mới</button>
+          </div>
         </form>
       </div>
     </div>

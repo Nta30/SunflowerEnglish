@@ -106,6 +106,7 @@ class BoTu(db.Model):
     MaBoTu = db.Column(db.Integer, primary_key=True, autoincrement=True)
     TenBoTu = db.Column(db.NVARCHAR(100), nullable=False)
     MoTa = db.Column(db.NVARCHAR(None))
+    Icon = db.Column(db.NVARCHAR(10), default='🌱')
     NgayTao = db.Column(db.DateTime, default=datetime.utcnow)
     MaNguoiDung = db.Column(db.Integer, db.ForeignKey('NguoiDung.MaNguoiDung'))
 
@@ -130,6 +131,7 @@ class FlashCard(db.Model):
     Tu = db.Column(db.NVARCHAR(100))
     Nghia = db.Column(db.NVARCHAR(None))
     PhienAm = db.Column(db.NVARCHAR(100))
+    ViDu = db.Column(db.NVARCHAR(None))
     MaBoTu = db.Column(db.Integer, db.ForeignKey('BoTu.MaBoTu', ondelete='CASCADE'))
 
 # 11. Bảng Loại từ
