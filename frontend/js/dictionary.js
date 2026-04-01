@@ -1,53 +1,10 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // Lấy thông tin từ localStorage
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const username = localStorage.getItem("username") || "";
-  const navLoginBtn = document.getElementById("navLoginBtn");
-  const userMenu = document.getElementById("userMenu");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const userNameSpan = document.querySelector(".user-profile-btn span:first-of-type");
+import {initApp} from "./core.js"
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp()
 
   // Base URL cho API
   const API_BASE_URL = "http://localhost:5000/api";
 
-  // Xử lý hiển thị đăng nhập / username
-if (isLoggedIn && username) {
-    if (navLoginBtn) navLoginBtn.style.display = "none";
-    if (userMenu) userMenu.style.display = "block";
-    if (userNameSpan) userNameSpan.textContent = username;
-    
-    // Cập nhật avatar
-    const avatar = document.querySelector(".user-profile-btn img");
-    if (avatar) {
-      avatar.src = `https://api.dicebear.com/7.x/notionists/svg?seed=${username}`;
-    }
-  } else {
-    if (navLoginBtn) navLoginBtn.style.display = "inline-block";
-    if (userMenu) userMenu.style.display = "none";
-  }
-
-  // Xử lý logout - DÙNG onclick THAY VÌ addEventListener
-  if (logoutBtn) {
-    // Gỡ bỏ event listener cũ nếu có
-    logoutBtn.onclick = null;
-    
-    // Gán event mới
-    logoutBtn.onclick = function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Xóa tất cả dữ liệu đăng nhập
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("username");
-      localStorage.removeItem("user_id");
-      
-      // Chuyển về trang chủ
-      window.location.href = "index.html";
-      
-      return false;
-    };
-  }
 
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
