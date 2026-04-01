@@ -209,3 +209,157 @@
   font-size: 15px;
   font-style: italic;
 }
+
+/* Container cho gợi ý từ */
+.suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: none;
+}
+
+/* Mỗi item gợi ý */
+.suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-item:hover {
+    background: #f5f5f5;
+}
+
+/* Từ trong gợi ý */
+.suggestion-word {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Phiên âm trong gợi ý */
+.suggestion-phonetic {
+    color: #999;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Điều chỉnh vị trí của search box để chứa absolute suggestions */
+.search-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+/* Scrollbar cho suggestions */
+.suggestions-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.suggestions-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb:hover {
+    background: #ffa726;
+}
+
+/* Highlight từ khóa trong gợi ý (tùy chọn) */
+/* .suggestion-word strong {
+    color: #121110;
+    font-weight: bold;
+} */
+
+/* Định nghĩa từ vựng in đậm */
+.word-meanings li {
+    font-weight: 600;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+.word-meanings li strong {
+    font-weight: 700;
+    color: #141413;
+}
+
+/* Từ đồng nghĩa và trái nghĩa */
+.word-synonyms-antonyms {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.synonyms-section, .antonyms-section {
+    margin-bottom: 20px;
+}
+
+.synonyms-section h4, .antonyms-section h4 {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.synonyms-container, .antonyms-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.synonym-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.synonym-tag:hover {
+    background: #1976d2;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.antonym-tag {
+    background: #ffebee;
+    color: #d32f2f;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.antonym-tag:hover {
+    background: #d32f2f;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.no-data {
+    color: #999;
+    font-style: italic;
+    font-size: 14px;
+}

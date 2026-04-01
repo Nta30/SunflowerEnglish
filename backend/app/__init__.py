@@ -15,7 +15,7 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     jwt.init_app(app)
-
+    from app.routes.dictionary import dictionary_bp
     from app.routes.auth import auth_bp
     from app.routes.exam import exam_bp
     from app.routes.flashcard import flashcard_bp
@@ -23,5 +23,6 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(exam_bp, url_prefix='/api/exams')
     app.register_blueprint(flashcard_bp,url_prefix='/api/flashcards')
+    app.register_blueprint(dictionary_bp, url_prefix='/api/dictionary')
 
     return app
