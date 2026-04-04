@@ -20,6 +20,11 @@ export function isLoggedIn() {
 export function saveAuth(data) {
   localStorage.setItem("token", data.access_token);
   localStorage.setItem("user_info", JSON.stringify(data.user));
+  if (data.user && data.user.role === 1) {
+    localStorage.setItem("isAdmin", "true");
+  } else {
+    localStorage.setItem("isAdmin", "false");
+  }
 }
 
 export function logout() {
@@ -168,6 +173,12 @@ export function initAuthModal() {
             showToast(result.message, "success");
             closeModal();
             document.dispatchEvent(new CustomEvent("auth:login"));
+
+            if (localStorage.getItem("isAdmin") === "true") {
+              setTimeout(() => {
+                window.location.href = "./admin.html";
+              }, 500);
+            }
           } else {
             showToast(result.message || "Tài khoản hoặc mật khẩu không chính xác!", "error");
           }

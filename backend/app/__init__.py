@@ -19,10 +19,13 @@ def create_app(config_class=Config):
     from app.routes.auth import auth_bp
     from app.routes.exam import exam_bp
     from app.routes.flashcard import flashcard_bp
+    from app.routes.admin import admin_bp
+
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(exam_bp, url_prefix='/api/exams')
     app.register_blueprint(flashcard_bp,url_prefix='/api/flashcards')
     app.register_blueprint(dictionary_bp, url_prefix='/api/dictionary')
+    app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
     return app
