@@ -135,9 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateDashboard();
 });
 
-// ============================================================
-// TABS
-// ============================================================
+// tab
 function initTabs() {
   document.querySelectorAll(".sidebar-menu li").forEach(tab => {
     tab.addEventListener("click", function () {
@@ -151,9 +149,7 @@ function initTabs() {
   });
 }
 
-// ============================================================
-// LIBRARY & HISTORY
-// ============================================================
+// library, history
 async function loadLibrary() {
   try {
     const data = await getExams();
