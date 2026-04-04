@@ -1,7 +1,8 @@
 from app import create_app, db
+from flask_cors import CORS  
 
 app = create_app()
-
+CORS(app)
 @app.route('/')
 def home():
     return '<h1>Hello</h1>'

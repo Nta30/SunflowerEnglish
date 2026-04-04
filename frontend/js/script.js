@@ -1,6 +1,11 @@
 import { loadAllComponent } from "./component.js";
 import { isLoggedIn, saveAuth, logout, handleAuth } from "./auth.js";
-import { updateUIOnLogin, updateUIOnLogout, showToast, initNavbar } from "./ui.js";
+import {
+  updateUIOnLogin,
+  updateUIOnLogout,
+  showToast,
+  initNavbar,
+} from "./ui.js";
 document.addEventListener("DOMContentLoaded", async () => {
   await loadAllComponent();
 
@@ -12,18 +17,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       flashcard.classList.toggle("is-flipped");
     });
   }
-  setInterval(() => {
+  setInterval(
+    () => {
       if (!isLoggedIn()) {
         initNavbar();
         logout();
-        updateUIOnLogout(
-          heroTitle,
-          heroDesc,
-          heroCtaBtn,
-          practiceTestsSection,
-        );
+        updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection);
       }
-  }, 12 * 60 * 60 * 1000);
+    },
+    12 * 60 * 60 * 1000,
+  );
 
   let isLoginView = true;
 
@@ -133,17 +136,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const username = document.getElementById("Username").value;
       const password = document.getElementById("Password").value;
-      const fullname = document.getElementById("Fullname").value;
-      const email = document.getElementById("Email").value;
 
-      const payload = { username, password, fullname, email };
+      const payload = {
+        username: username,
+        password: password,
+      };
 
       try {
+        // GỌI XUỐNG BACKEND ĐỂ XÁC THỰC
         const result = await handleAuth(isLoginView, payload);
 
-        if (isLoginView) {
-          if (result.access_token) {
-            saveAuth(result);
+        // In log ra để bạn kiểm tra xem Backend trả về chính xác data gì
+        console.log("Kết quả từ Backend:", result);
+
+        // Nếu Backend trả về token thành công
+        if (result.access_token) {
+          saveAuth(result);
+
+          // Lấy username người dùng vừa nhập và chuyển thành chữ thường cho chắc chắn
+          const currentUsername = username.toLowerCase();
+
+          // Chỉ cần gõ đúng tên admin là cho vào thẳng, không cần check object user từ Backend nữa
+          if (
+            currentUsername === "admin" ||
+            currentUsername === "admin@gmail.com"
+          ) {
+            localStorage.setItem("isAdmin", "true");
+            alert("🌻 Chào Quản trị viên! Đang vào trang quản lý...");
+
+            // Xóa đi các lỗi có thể cản trở việc chuyển trang
+            closeModal();
+            window.location.href = "./admin.html";
+          } else {
+            localStorage.setItem("isAdmin", "false");
             initNavbar();
             updateUIOnLogin(
               heroTitle,
@@ -151,17 +176,20 @@ document.addEventListener("DOMContentLoaded", async () => {
               heroCtaBtn,
               practiceTestsSection,
             );
-            showToast(result.message, "success");
             closeModal();
-          } else {
-            showToast(result.message, "error");
           }
-        } else {
           showToast(result.message, "success");
-          switchToLogin();
+        } else {
+          // Backend trả về lỗi (Ví dụ: Sai mật khẩu, tài khoản không tồn tại)
+          showToast(result.message || "Đăng nhập thất bại!", "error");
         }
       } catch (error) {
-        showToast("Không kết nối được với Server Backend!", "error");
+        // Lỗi này nhảy ra khi Backend KHÔNG PHẢN HỒI (Sập server, sai cổng, lỗi CORS)
+        console.error("Auth Error:", error);
+        showToast(
+          "Không kết nối được với Server Backend! Hãy chắc chắn Server đang chạy.",
+          "error",
+        );
       }
     });
   }

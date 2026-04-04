@@ -19,15 +19,13 @@
           <li class="active" data-tab="tab-dashboard">📊 Bảng điều khiển</li>
           <li data-tab="tab-users">👥 Quản lý Người dùng</li>
           <li data-tab="tab-exams">📝 Quản lý Đề thi</li>
-          <li data-tab="tab-flashcards">🗂️ Quản lý Flashcard</li>
-          <li data-tab="tab-settings">⚙️ Cài đặt hệ thống</li>
         </ul>
         <button class="admin-logout" id="adminLogoutBtn">🚪 Đăng xuất</button>
       </aside>
 
       <main class="admin-content">
         <header class="admin-header">
-          <h2>Bảng điều khiển</h2>
+          <h2 id="mainHeaderTitle">Bảng điều khiển</h2>
           <div class="admin-profile">
             <img
               src="https://api.dicebear.com/7.x/notionists/svg?seed=Admin"
@@ -93,8 +91,10 @@
 
         <div id="tab-users" class="admin-tab-pane">
           <div class="admin-panel-header">
-            <h3>Danh sách Người dùng</h3>
-            <div class="admin-actions">
+            <div
+              class="admin-actions"
+              style="width: 100%; justify-content: space-between"
+            >
               <input
                 type="text"
                 placeholder="Tìm kiếm email..."
@@ -122,47 +122,116 @@
         </div>
 
         <div id="tab-exams" class="admin-tab-pane">
-          <div class="admin-panel-header">
-            <h3>Kho Đề Thi TOEIC</h3>
-            <div class="admin-actions">
-              <input
-                type="text"
-                placeholder="Tìm kiếm đề thi..."
-                class="admin-search"
-              />
-              <button class="btn-primary" onclick="openCrudModal('exam')">
-                + Tạo Đề mới
-              </button>
+          <div id="examListView">
+            <div class="admin-panel-header">
+              <div
+                class="admin-actions"
+                style="width: 100%; justify-content: space-between"
+              >
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm đề thi..."
+                  class="admin-search"
+                />
+                <button class="btn-primary" onclick="openExamBuilder()">
+                  + Trình tạo Đề thi
+                </button>
+              </div>
+            </div>
+            <div class="admin-panel">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Mã đề</th>
+                    <th>Tên đề thi</th>
+                    <th>Số câu</th>
+                    <th>Lượt làm</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="examsTableBody"></tbody>
+              </table>
             </div>
           </div>
-          <div class="admin-panel">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Mã đề</th>
-                  <th>Tên đề thi</th>
-                  <th>Số câu</th>
-                  <th>Lượt làm</th>
-                  <th>Trạng thái</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="examsTableBody"></tbody>
-            </table>
-          </div>
-        </div>
 
-        <div id="tab-flashcards" class="admin-tab-pane">
-          <div class="admin-panel">
-            <h3>Quản lý Flashcard</h3>
-            <p>Tính năng đang được phát triển...</p>
-          </div>
-        </div>
+          <div id="examBuilderView" style="display: none">
+            <div class="builder-top-bar">
+              <div class="builder-top-left">
+                <button class="btn-back" onclick="closeExamBuilder()">
+                  🔙 Hủy & Quay lại
+                </button>
+                <input
+                  type="text"
+                  class="exam-title-input"
+                  placeholder="Nhập tên đề thi (VD: ETS 2024 Test 1)..."
+                />
+              </div>
+              <div class="builder-top-right">
+                <select class="exam-status-select">
+                  <option value="draft">Bản nháp</option>
+                  <option value="public">Công khai xuất bản</option>
+                </select>
+                <button class="btn-primary" onclick="saveExam()">
+                  💾 Lưu Đề Thi
+                </button>
+              </div>
+            </div>
 
-        <div id="tab-settings" class="admin-tab-pane">
-          <div class="admin-panel">
-            <h3>Cài đặt hệ thống</h3>
-            <p>Tính năng đang được phát triển...</p>
+            <div class="builder-global-config admin-panel">
+              <div class="config-row">
+                <div class="config-item">
+                  <label>Audio Tổng (Listening Part 1-4)</label>
+                  <div class="file-upload-box">
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      id="globalAudioUpload"
+                    />
+                    <span>Tải lên file MP3</span>
+                  </div>
+                </div>
+                <div class="config-item">
+                  <label>Tags / Phân loại</label>
+                  <input
+                    type="text"
+                    class="exam-tags-input"
+                    placeholder="VD: Full Test, Khó, 2024..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="builder-workspace">
+              <div class="builder-sidebar">
+                <div class="part-nav-btn active" data-build-part="1">
+                  Part 1 (Hình ảnh)
+                </div>
+                <div class="part-nav-btn" data-build-part="2">
+                  Part 2 (Hỏi đáp)
+                </div>
+                <div class="part-nav-btn" data-build-part="3">
+                  Part 3 (Hội thoại)
+                </div>
+                <div class="part-nav-btn" data-build-part="4">
+                  Part 4 (Bài nói)
+                </div>
+                <div class="part-nav-btn" data-build-part="5">
+                  Part 5 (Điền từ)
+                </div>
+                <div class="part-nav-btn" data-build-part="6">
+                  Part 6 (Điền đoạn văn)
+                </div>
+                <div class="part-nav-btn" data-build-part="7">
+                  Part 7 (Đọc hiểu)
+                </div>
+              </div>
+
+              <div
+                class="builder-content-area admin-panel"
+                id="builderContentArea"
+              ></div>
+            </div>
           </div>
         </div>
       </main>
