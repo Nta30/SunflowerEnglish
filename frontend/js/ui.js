@@ -1,12 +1,19 @@
-import { isLoggedIn, logout } from "./auth.js";
+import { isLoggedIn } from "./auth.js";
 
 export function initNavbar(){
   const navLoginBtn = document.getElementById("navLoginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const usernameDisplay = document.querySelector(".user-name");
   const userMenu = document.getElementById("userMenu");
+  const usernameDisplay = document.querySelector(".user-name");
+
+  if (!navLoginBtn || !userMenu || !usernameDisplay) return;
+
   let userInfo = localStorage.getItem("user_info");
-  let username = userInfo ? JSON.parse(userInfo).username : "Học viên Hướng Dương";
+  let username = "";
+  try {
+    username = userInfo ? JSON.parse(userInfo).username : "Học viên Hướng Dương";
+  } catch (e) {
+    username = "Học viên Hướng Dương";
+  }
 
   if (isLoggedIn()) {
     navLoginBtn.style.display = "none";
@@ -16,17 +23,6 @@ export function initNavbar(){
     navLoginBtn.style.display = "inline-block";
     userMenu.style.display = "none";
   }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      initNavbar();
-      logout();
-      updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
-
 }
 
 function resetAuthState() {
@@ -40,8 +36,13 @@ function resetAuthState() {
   if (emailInput) emailInput.value = "";
 }
 
-export function updateUIOnLogin(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection){
+export function updateUIOnLogin(){
     resetAuthState();
+    const heroTitle = document.getElementById("heroTitle");
+    const heroDesc = document.getElementById("heroDesc");
+    const heroCtaBtn = document.getElementById("heroCtaBtn");
+    const practiceTestsSection = document.getElementById("practiceTestsSection");
+
     if (heroTitle && heroDesc && heroCtaBtn) {
       heroTitle.innerHTML =
         'Chào mừng bạn quay lại, <br> <span class="highlight">Học viên Hướng Dương!</span>';
@@ -56,8 +57,13 @@ export function updateUIOnLogin(heroTitle, heroDesc, heroCtaBtn, practiceTestsSe
     }
 }
 
-export function updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsSection) {
+export function updateUIOnLogout() {
     resetAuthState();
+    const heroTitle = document.getElementById("heroTitle");
+    const heroDesc = document.getElementById("heroDesc");
+    const heroCtaBtn = document.getElementById("heroCtaBtn");
+    const practiceTestsSection = document.getElementById("practiceTestsSection");
+
     if (heroTitle && heroDesc && heroCtaBtn) {
       heroTitle.innerHTML =
         'Cùng vươn lên đón nắng với <br> <span class="highlight">Sunflower English</span>';
@@ -69,10 +75,11 @@ export function updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsS
         practiceTestsSection.style.display = "none";
       }
     }
-  }
+}
 
-  export function showToast(message, type) {
+export function showToast(message, type) {
   const container = document.getElementById("toastContainer");
+  if (!container) return;
 
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
@@ -91,4 +98,4 @@ export function updateUIOnLogout(heroTitle, heroDesc, heroCtaBtn, practiceTestsS
       toast.remove();
     }, 400);
   }, 3000);
-}
+}

@@ -1,218 +1,258 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Luyện TOEIC | Sunflower English</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./css/style.css" />
-    <link rel="stylesheet" href="./css/toeic.css" />
-  </head>
-  <body>
-    <nav class="navbar">
-      <div class="logo" onclick="window.location.href = 'index.html'">
-        🌻 Sunflower
-      </div>
-      <ul class="nav-links">
-        <li><a href="index.html">Trang chủ</a></li>
-        <li>
-          <a href="toeic.html" style="color: var(--primary-hover)"
-            >Luyện TOEIC</a
-          >
-        </li>
-        <li><a href="dictionary.html">Từ điển</a></li>
-        <li><a href="flashcard.html">Flashcard</a></li>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luyện TOEIC | Sunflower English</title>
+  <meta name="description"
+    content="Luyện thi TOEIC hiệu quả với Sunflower English. Kho đề thi phong phú, chế độ luyện tập linh hoạt." />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/toeic.css" />
+</head>
+
+<body>
+  <div data-component="navbar"></div>
+  <div data-component="auth_modal"></div>
+  <div data-component="toast"></div>
+
+  <div class="toeic-layout" id="toeicLayout">
+    <aside class="sidebar" id="mainSidebar">
+      <ul class="sidebar-menu">
+        <li class="active" data-tab="dashboard">📊 Tổng quan</li>
+        <li data-tab="library">📚 Kho đề thi</li>
+        <li data-tab="history">⏳ Lịch sử làm bài</li>
       </ul>
-      <div class="nav-auth">
-        <div class="user-menu" id="userMenu">
-          <div class="user-profile-btn">
-            <img
-              src="https://api.dicebear.com/7.x/notionists/svg?seed=Sunflower"
-              alt="Avatar"
-              class="avatar"
-            />
-            <span>Nắng Mới</span>
-            <span class="arrow">▼</span>
+    </aside>
+
+    <main class="toeic-content">
+      <div id="dashboard" class="tab-pane active">
+        <div class="stats-header">
+          <h2>Khu vườn thành tích 🌱</h2>
+          <div class="target-box">
+            <span>Mục tiêu:</span><strong id="targetScore">850</strong>
           </div>
-          <ul class="dropdown-content">
-            <li><a href="#">⚙️ Cài đặt</a></li>
-            <li>
-              <a href="#" id="logoutBtn" style="color: #ef5350">🚪 Đăng xuất</a>
-            </li>
-          </ul>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-info">
+              <p>Điểm cao nhất</p>
+              <h3 id="statBest">--</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-info">
+              <p>Trung bình</p>
+              <h3 id="statAvg">--</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📉</div>
+            <div class="stat-info">
+              <p>Điểm thấp nhất</p>
+              <h3 id="statLowest">--</h3>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-info">
+              <p>Đề đã làm</p>
+              <h3 id="statCount">--</h3>
+            </div>
+          </div>
+        </div>
+        <div class="chart-section">
+          <h3>Phân tích kỹ năng</h3>
+          <div class="skill-bars">
+            <div class="skill-bar-group">
+              <div class="skill-label">
+                <span>🎧 Listening (LC)</span>
+                <span id="lcScoreLabel">-- / 495</span>
+              </div>
+              <div class="bar-bg">
+                <div class="bar-fill lc-fill" id="lcBar" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="skill-bar-group">
+              <div class="skill-label">
+                <span>📖 Reading (RC)</span>
+                <span id="rcScoreLabel">-- / 495</span>
+              </div>
+              <div class="bar-bg">
+                <div class="bar-fill rc-fill" id="rcBar" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="library" class="tab-pane">
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">Tất cả</button>
+          <button class="filter-btn" data-filter="full">Đề Full</button>
+          <button class="filter-btn" data-filter="new">Chưa làm</button>
+        </div>
+        <div class="test-grid" id="testGrid">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Đang tải đề thi...</p>
+          </div>
         </div>
       </div>
-    </nav>
 
-    <div class="toeic-layout">
-      <aside class="sidebar" id="mainSidebar">
-        <ul class="sidebar-menu">
-          <li class="active" data-tab="dashboard">📊 Tổng quan</li>
-          <li data-tab="library">📚 Kho đề thi</li>
-          <li data-tab="history">⏳ Lịch sử làm bài</li>
-        </ul>
-      </aside>
-
-      <main class="toeic-content">
-        <div id="dashboard" class="tab-pane active">
-          <div class="stats-header">
-            <h2>Khu vườn thành tích 🌱</h2>
-            <div class="target-box">
-              <span>Mục tiêu:</span><strong>850</strong>
-            </div>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon">🔥</div>
-              <div class="stat-info">
-                <p>Điểm cao nhất</p>
-                <h3>820</h3>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">⚖️</div>
-              <div class="stat-info">
-                <p>Trung bình</p>
-                <h3>745</h3>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">📉</div>
-              <div class="stat-info">
-                <p>Điểm thấp nhất</p>
-                <h3>600</h3>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">📝</div>
-              <div class="stat-info">
-                <p>Đề đã làm</p>
-                <h3>12</h3>
-              </div>
-            </div>
-          </div>
-          <div class="chart-section">
-            <h3>Phân tích kỹ năng</h3>
-            <div class="skill-bars">
-              <div class="skill-bar-group">
-                <div class="skill-label">
-                  <span>🎧 Listening (LC)</span>
-                  <span>410 / 495</span>
-                </div>
-                <div class="bar-bg">
-                  <div class="bar-fill lc-fill" style="width: 82%"></div>
-                </div>
-              </div>
-              <div class="skill-bar-group">
-                <div class="skill-label">
-                  <span>📖 Reading (RC)</span>
-                  <span>335 / 495</span>
-                </div>
-                <div class="bar-bg">
-                  <div class="bar-fill rc-fill" style="width: 67%"></div>
-                </div>
-              </div>
-            </div>
+      <div id="history" class="tab-pane">
+        <h2>Lịch sử gặt hái 🌻</h2>
+        <div class="history-list" id="historyList">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Đang tải lịch sử...</p>
           </div>
         </div>
+      </div>
+    </main>
+  </div>
 
-        <div id="library" class="tab-pane">
-          <div class="filter-bar">
-            <button class="filter-btn active">Tất cả</button>
-            <button class="filter-btn">Đề Full</button>
-            <button class="filter-btn">Chưa làm</button>
-          </div>
-          <div class="test-grid" id="testGrid"></div>
-        </div>
+  <div id="examArea" class="exam-area" style="display:none">
 
-        <div id="history" class="tab-pane">
-          <h2>Lịch sử gặt hái 🌻</h2>
-          <div class="history-list" id="historyList"></div>
-        </div>
-
-        <div id="testArea" class="tab-pane">
-          <div class="test-top-bar">
-            <button class="btn-back-library" id="backToLibraryBtn">
-              🔙 Thoát
-            </button>
-            <div class="audio-player-container">
-              <audio controls><source src="#" type="audio/mpeg" /></audio>
-            </div>
-          </div>
-
-          <div class="part-tabs-container">
-            <button class="part-tab active" data-part="1">Part 1</button>
-            <button class="part-tab" data-part="2">Part 2</button>
-            <button class="part-tab" data-part="3">Part 3</button>
-            <button class="part-tab" data-part="4">Part 4</button>
-            <button class="part-tab" data-part="5">Part 5</button>
-            <button class="part-tab" data-part="6">Part 6</button>
-            <button class="part-tab" data-part="7">Part 7</button>
-          </div>
-
-          <div class="test-workspace">
-            <div class="test-content-area">
-              <div class="passage-col" id="passageCol" style="display: none">
-                <div class="passage-card" id="passageContent"></div>
-              </div>
-              <div class="questions-col" id="questionsContainer"></div>
-            </div>
-
-            <div class="test-right-sidebar">
-              <div class="timer-box">
-                <p>Thời gian còn lại:</p>
-                <div class="timer" id="countdownTimer">120:00</div>
-              </div>
-              <button class="btn-submit-test" id="submitTestBtn">
-                NỘP BÀI
-              </button>
-              <p class="palette-hint">
-                Click vào số thứ tự để nhảy đến câu hỏi
-              </p>
-              <div class="question-palette" id="questionPalette"></div>
-            </div>
-          </div>
-        </div>
-      </main>
+    <div class="exam-topbar" id="examTopbar">
+      <button class="btn-exit-exam" id="exitExamBtn">← Thoát</button>
+      <div class="exam-meta">
+        <span class="exam-name-display" id="examNameDisplay"></span>
+        <span class="exam-mode-badge" id="examModeBadge"></span>
+      </div>
+      <audio id="examAudio" preload="auto"></audio>
     </div>
 
-    <div id="resultModal" class="modal-overlay">
-      <div class="modal-content result-content">
-        <h2 id="resultGreeting">Tuyệt vời! 🎉</h2>
+    <div class="listening-hud" id="listeningHud" style="display:none">
+      <span class="lhud-part-label" id="lhudPartLabel">Part 1</span>
+      <div class="lhud-bar-wrap">
+        <div class="lhud-bar-bg">
+          <div class="lhud-bar-fill" id="lhudBarFill" style="width:0%"></div>
+        </div>
+        <span class="lhud-counter"><span id="lhudCurrent">1</span> / <span id="lhudTotal">6</span></span>
+      </div>
+      <div class="lhud-countdown" id="lhudCountdown" style="display:none">
+        Chuyển sau <span class="countdown-num" id="countdownNum">3</span>s
+      </div>
+    </div>
+
+    <div class="exam-workspace" id="examWorkspace">
+
+      <div class="exam-zone-1" id="examZone1" style="display:none">
+        <div class="zone1-inner" id="zone1Inner"></div>
+      </div>
+
+      <div class="exam-zone-2" id="examZone2">
+        <div id="questionDisplay"></div>
+        
+        <div class="exam-nav-actions" id="examNavActions" style="display:none">
+          <button class="btn-nav" id="prevItemBtn">← Trở lại</button>
+          <button class="btn-nav" id="nextItemBtn">Tiếp tục →</button>
+        </div>
+      </div>
+
+      <div class="exam-zone-3" id="examZone3">
+        <div class="timer-widget" id="timerWidgetWrap">
+          <div class="timer-label">⏱ Thời gian còn lại</div>
+          <div class="timer-display" id="timerDisplay">--:--</div>
+        </div>
+        <button class="btn-submit-exam" id="submitExamBtn">📤 NỘP BÀI</button>
+        <div class="palette-wrap">
+          <div class="palette-title">📋 Bảng câu hỏi</div>
+          <p class="palette-hint">Click để nhảy đến câu</p>
+          <div id="paletteContainer"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="modeModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content mode-modal-content">
+      <h2 class="modal-title">🎯 Chọn chế độ thi</h2>
+      <p class="modal-exam-name" id="modeModalExamName"></p>
+
+      <div class="mode-options">
+        <label class="mode-option-card" id="modeCardFull">
+          <input type="radio" name="examMode" value="full" checked />
+          <div class="mode-card-body">
+            <div class="mode-icon">📋</div>
+            <div class="mode-info">
+              <strong>Full Test</strong>
+              <p>Làm toàn bộ đề, thời gian mặc định</p>
+              <span class="mode-time-badge" id="fullTimeLabel">120 phút</span>
+            </div>
+          </div>
+        </label>
+
+        <label class="mode-option-card" id="modeCardPart">
+          <input type="radio" name="examMode" value="part" />
+          <div class="mode-card-body">
+            <div class="mode-icon">🎯</div>
+            <div class="mode-info">
+              <strong>Luyện Part</strong>
+              <p>Chọn part và tự đặt thời gian</p>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <div id="partSelectorArea" style="display:none">
+        <div class="part-selector-label">Chọn Part:</div>
+        <div class="part-checkboxes" id="partCheckboxes"></div>
+        <div class="custom-time-row">
+          <label for="customTimeInput">⏱ Thời gian:</label>
+          <input type="number" id="customTimeInput" min="1" max="300" value="30" />
+          <span>phút</span>
+        </div>
+      </div>
+
+      <div class="mode-modal-actions">
+        <button class="btn-cancel-mode" id="cancelModeBtn">Huỷ</button>
+        <button class="btn-start-exam" id="startExamBtn">🚀 Bắt đầu thi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-content result-modal-content">
+      <h2 class="result-greeting" id="resultGreeting">Tuyệt vời! 🎉</h2>
+      <div class="score-circle-wrap">
         <div class="score-circle">
-          <span id="finalScore">820</span>
+          <span class="score-total" id="finalScore">--</span>
           <p>Tổng điểm</p>
         </div>
-        <div class="score-details">
-          <p>Listening: <strong class="lc-color">410</strong></p>
-          <p>Reading: <strong class="rc-color">410</strong></p>
+      </div>
+      <div class="score-breakdown">
+        <div class="score-item">
+          <div class="score-item-label">🎧 Listening</div>
+          <div class="score-item-value lc-color" id="lcScore">--</div>
         </div>
-        <button
-          class="btn-primary"
-          id="reviewBtn"
-          style="margin-top: 20px; width: 100%"
-        >
-          Xem chi tiết & Chữa lỗi 📝
-        </button>
+        <div class="score-divider"></div>
+        <div class="score-item">
+          <div class="score-item-label">📖 Reading</div>
+          <div class="score-item-value rc-color" id="rcScore">--</div>
+        </div>
+      </div>
+      <div class="score-stats">
+        <span class="stat-pill correct" id="correctCount">-- đúng</span>
+        <span class="stat-pill wrong" id="wrongCount">-- sai</span>
+        <span class="stat-pill skip" id="skipCount">-- bỏ qua</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn-close-result" id="closeResultBtn">Đóng</button>
+        <button class="btn-view-history" id="viewHistoryBtn">Xem lịch sử 📋</button>
       </div>
     </div>
+  </div>
 
-    <div id="historyModal" class="modal-overlay">
-      <div class="modal-content admin-modal">
-        <span class="close-btn" id="closeHistoryBtn">&times;</span>
-        <div class="modal-header">
-          <h2>Chi tiết bài làm</h2>
-        </div>
-        <div
-          id="historyDetailContent"
-          style="margin-top: 20px; text-align: left; line-height: 1.8"
-        ></div>
-      </div>
-    </div>
+  <script type="module" src="./js/toeic.js"></script>
+</body>
 
-    <script src="./js/toeic.js"></script>
-  </body>
 </html>

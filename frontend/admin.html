@@ -4,258 +4,499 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | Sunflower English</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="./css/style.css" />
+    <meta name="description" content="Quản trị hệ thống Sunflower English — Nền tảng học tiếng Anh trực tuyến" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./css/admin.css" />
   </head>
   <body>
     <div class="admin-layout">
-      <aside class="admin-sidebar">
-        <div class="admin-logo">🌻 Sunflower Admin</div>
-        <ul class="admin-menu">
-          <li class="active" data-tab="tab-dashboard">📊 Bảng điều khiển</li>
-          <li data-tab="tab-users">👥 Quản lý Người dùng</li>
-          <li data-tab="tab-exams">📝 Quản lý Đề thi</li>
-        </ul>
-        <button class="admin-logout" id="adminLogoutBtn">🚪 Đăng xuất</button>
+      <!-- ═══════ SIDEBAR ═══════ -->
+      <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+          <span class="brand-icon">🌻</span>
+          <span class="brand-text">Sunflower</span>
+          <span class="brand-badge">Admin</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section-label">TỔNG QUAN</div>
+          <a class="nav-item active" data-tab="dashboard">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Bảng điều khiển</span>
+          </a>
+
+          <div class="nav-section-label">QUẢN LÝ</div>
+          <a class="nav-item" data-tab="users">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Người dùng</span>
+          </a>
+          <a class="nav-item" data-tab="exams">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Đề thi</span>
+          </a>
+          <a class="nav-item" data-tab="flashcards">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+            <span>Flashcard</span>
+          </a>
+
+          <div class="nav-section-label">HỆ THỐNG</div>
+          <a class="nav-item" data-tab="settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Cài đặt</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="admin-info">
+            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Admin" alt="Admin" class="admin-avatar" />
+            <div class="admin-meta">
+              <span class="admin-name" id="adminDisplayName">Quản trị viên</span>
+              <span class="admin-role">Administrator</span>
+            </div>
+          </div>
+          <button class="logout-btn" id="adminLogoutBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Đăng xuất</span>
+          </button>
+        </div>
       </aside>
 
-      <main class="admin-content">
-        <header class="admin-header">
-          <h2 id="mainHeaderTitle">Bảng điều khiển</h2>
-          <div class="admin-profile">
-            <img
-              src="https://api.dicebear.com/7.x/notionists/svg?seed=Admin"
-              alt="Admin"
-              class="avatar"
-            />
-            <span>Quản trị viên</span>
+      <!-- ═══════ MAIN CONTENT ═══════ -->
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebarToggle">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <div>
+              <h1 class="page-title" id="pageTitle">Bảng điều khiển</h1>
+              <p class="page-subtitle" id="pageSubtitle">Tổng quan hệ thống Sunflower English</p>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <div class="live-clock" id="liveClock"></div>
           </div>
         </header>
 
-        <div id="tab-dashboard" class="admin-tab-pane active">
-          <div class="admin-stats-grid">
-            <div class="admin-stat-card">
-              <div class="icon users-icon">👥</div>
-              <div class="info">
-                <p>Tổng học viên</p>
-                <h3>1,245</h3>
+        <div class="admin-content">
+          <!-- ═══════ TAB: DASHBOARD ═══════ -->
+          <section id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid">
+              <div class="stat-card" data-stat="users">
+                <div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Tổng học viên</span>
+                  <span class="stat-value" id="statUsers">—</span>
+                </div>
+              </div>
+              <div class="stat-card" data-stat="sessions">
+                <div class="stat-icon amber"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Lượt làm bài</span>
+                  <span class="stat-value" id="statSessions">—</span>
+                </div>
+              </div>
+              <div class="stat-card" data-stat="score">
+                <div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Điểm trung bình</span>
+                  <span class="stat-value" id="statAvgScore">—</span>
+                </div>
+              </div>
+              <div class="stat-card" data-stat="flashcards">
+                <div class="stat-icon purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Tổng Flashcard</span>
+                  <span class="stat-value" id="statFlashcards">—</span>
+                </div>
               </div>
             </div>
-            <div class="admin-stat-card">
-              <div class="icon exams-icon">📝</div>
-              <div class="info">
-                <p>Lượt làm bài</p>
-                <h3>8,430</h3>
-              </div>
-            </div>
-            <div class="admin-stat-card">
-              <div class="icon score-icon">🎯</div>
-              <div class="info">
-                <p>Điểm trung bình</p>
-                <h3>680</h3>
-              </div>
-            </div>
-            <div class="admin-stat-card">
-              <div class="icon words-icon">🔤</div>
-              <div class="info">
-                <p>Từ vựng đã lưu</p>
-                <h3>15,200</h3>
-              </div>
-            </div>
-          </div>
 
-          <div class="admin-dashboard-split">
-            <div class="admin-panel">
-              <h3>Hoạt động gần đây</h3>
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Học viên</th>
-                    <th>Hành động</th>
-                    <th>Thời gian</th>
-                  </tr>
-                </thead>
-                <tbody id="recentActivityTable"></tbody>
-              </table>
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Hoạt động gần đây</h3>
+                </div>
+                <div class="panel-body">
+                  <table class="data-table">
+                    <thead>
+                      <tr><th>Học viên</th><th>Hành động</th><th>Thời gian</th></tr>
+                    </thead>
+                    <tbody id="recentActivityBody">
+                      <tr><td colspan="3" class="empty-state">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Đề thi phổ biến</h3>
+                </div>
+                <div class="panel-body">
+                  <ul class="top-list" id="topExamsList">
+                    <li class="empty-state">Đang tải dữ liệu...</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div class="admin-panel">
-              <h3>Đề thi phổ biến nhất</h3>
-              <ul class="top-exams-list" id="topExamsList"></ul>
-            </div>
-          </div>
-        </div>
+          </section>
 
-        <div id="tab-users" class="admin-tab-pane">
-          <div class="admin-panel-header">
-            <div
-              class="admin-actions"
-              style="width: 100%; justify-content: space-between"
-            >
-              <input
-                type="text"
-                placeholder="Tìm kiếm email..."
-                class="admin-search"
-              />
-              <button class="btn-primary" onclick="openCrudModal('user')">
-                + Thêm Học viên
+          <!-- ═══════ TAB: USERS ═══════ -->
+          <section id="tab-users" class="tab-content">
+            <div class="content-toolbar">
+              <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="userSearchInput" placeholder="Tìm kiếm theo tên, email..." />
+              </div>
+              <button class="btn btn-primary" id="btnAddUser">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Thêm học viên
               </button>
             </div>
-          </div>
-          <div class="admin-panel">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Họ Tên</th>
-                  <th>Email</th>
-                  <th>Trạng thái</th>
-                  <th>Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="tab-exams" class="admin-tab-pane">
-          <div id="examListView">
-            <div class="admin-panel-header">
-              <div
-                class="admin-actions"
-                style="width: 100%; justify-content: space-between"
-              >
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm đề thi..."
-                  class="admin-search"
-                />
-                <button class="btn-primary" onclick="openExamBuilder()">
-                  + Trình tạo Đề thi
-                </button>
-              </div>
-            </div>
-            <div class="admin-panel">
-              <table class="admin-table">
+            <div class="table-container">
+              <table class="data-table" id="usersTable">
                 <thead>
                   <tr>
-                    <th>Mã đề</th>
-                    <th>Tên đề thi</th>
-                    <th>Số câu</th>
-                    <th>Lượt làm</th>
+                    <th>ID</th>
+                    <th>Họ Tên</th>
+                    <th>Tài khoản</th>
+                    <th>Email</th>
                     <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
                     <th>Hành động</th>
                   </tr>
                 </thead>
-                <tbody id="examsTableBody"></tbody>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="7" class="empty-state">Đang tải...</td></tr>
+                </tbody>
               </table>
             </div>
-          </div>
+          </section>
 
-          <div id="examBuilderView" style="display: none">
-            <div class="builder-top-bar">
-              <div class="builder-top-left">
-                <button class="btn-back" onclick="closeExamBuilder()">
-                  🔙 Hủy & Quay lại
-                </button>
-                <input
-                  type="text"
-                  class="exam-title-input"
-                  placeholder="Nhập tên đề thi (VD: ETS 2024 Test 1)..."
-                />
-              </div>
-              <div class="builder-top-right">
-                <select class="exam-status-select">
-                  <option value="draft">Bản nháp</option>
-                  <option value="public">Công khai xuất bản</option>
-                </select>
-                <button class="btn-primary" onclick="saveExam()">
-                  💾 Lưu Đề Thi
+          <!-- ═══════ TAB: EXAMS ═══════ -->
+          <section id="tab-exams" class="tab-content">
+            <!-- Sub-view: Exam List -->
+            <div id="examListView">
+              <div class="content-toolbar">
+                <div class="search-box">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="examSearchInput" placeholder="Tìm kiếm đề thi..." />
+                </div>
+                <button class="btn btn-primary" id="btnAddExam">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Tạo đề thi mới
                 </button>
               </div>
+              <div class="table-container">
+                <table class="data-table" id="examsTable">
+                  <thead>
+                    <tr>
+                      <th>Mã đề</th>
+                      <th>Tên đề thi</th>
+                      <th>Thời gian</th>
+                      <th>Số câu</th>
+                      <th>Lượt làm</th>
+                      <th>Trạng thái</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="examsTableBody">
+                    <tr><td colspan="7" class="empty-state">Đang tải...</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div class="builder-global-config admin-panel">
-              <div class="config-row">
-                <div class="config-item">
-                  <label>Audio Tổng (Listening Part 1-4)</label>
-                  <div class="file-upload-box">
-                    <input
-                      type="file"
-                      accept="audio/*"
-                      id="globalAudioUpload"
-                    />
-                    <span>Tải lên file MP3</span>
-                  </div>
+            <!-- Sub-view: Question Editor -->
+            <div id="questionEditorView" style="display:none">
+              <div class="content-toolbar">
+                <button class="btn btn-ghost" id="btnBackToExams">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                  Quay lại danh sách
+                </button>
+                <h3 class="editor-exam-name" id="editorExamName"></h3>
+                <button class="btn btn-primary" id="btnAddQuestion">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Thêm câu hỏi
+                </button>
+              </div>
+              <div class="questions-grid" id="questionsGrid">
+                <div class="empty-state-box">Đang tải câu hỏi...</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ═══════ TAB: FLASHCARDS ═══════ -->
+          <section id="tab-flashcards" class="tab-content">
+            <div class="stats-grid stats-grid-3">
+              <div class="stat-card">
+                <div class="stat-icon amber"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Tổng bộ từ</span>
+                  <span class="stat-value" id="fcStatDecks">—</span>
                 </div>
-                <div class="config-item">
-                  <label>Tags / Phân loại</label>
-                  <input
-                    type="text"
-                    class="exam-tags-input"
-                    placeholder="VD: Full Test, Khó, 2024..."
-                  />
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon green"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">Tổng thẻ từ</span>
+                  <span class="stat-value" id="fcStatCards">—</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon blue"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div class="stat-info">
+                  <span class="stat-label">User tích cực nhất</span>
+                  <span class="stat-value fc-top-user" id="fcTopUser">—</span>
                 </div>
               </div>
             </div>
 
-            <div class="builder-workspace">
-              <div class="builder-sidebar">
-                <div class="part-nav-btn active" data-build-part="1">
-                  Part 1 (Hình ảnh)
-                </div>
-                <div class="part-nav-btn" data-build-part="2">
-                  Part 2 (Hỏi đáp)
-                </div>
-                <div class="part-nav-btn" data-build-part="3">
-                  Part 3 (Hội thoại)
-                </div>
-                <div class="part-nav-btn" data-build-part="4">
-                  Part 4 (Bài nói)
-                </div>
-                <div class="part-nav-btn" data-build-part="5">
-                  Part 5 (Điền từ)
-                </div>
-                <div class="part-nav-btn" data-build-part="6">
-                  Part 6 (Điền đoạn văn)
-                </div>
-                <div class="part-nav-btn" data-build-part="7">
-                  Part 7 (Đọc hiểu)
+            <div class="panel" style="margin-top:24px">
+              <div class="panel-header">
+                <h3>Tất cả bộ từ của học viên</h3>
+              </div>
+              <div class="panel-body">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Tên bộ từ</th>
+                      <th>Học viên</th>
+                      <th>Số thẻ</th>
+                      <th>Ngày tạo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fcDecksBody">
+                    <tr><td colspan="5" class="empty-state">Đang tải...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ═══════ TAB: SETTINGS ═══════ -->
+          <section id="tab-settings" class="tab-content">
+            <div class="settings-grid">
+              <div class="panel">
+                <div class="panel-header"><h3>🖥️ Thông tin hệ thống</h3></div>
+                <div class="panel-body">
+                  <div class="settings-info-row"><span>Nền tảng</span><strong>Sunflower English v1.0</strong></div>
+                  <div class="settings-info-row"><span>Backend</span><strong>Flask + SQLAlchemy</strong></div>
+                  <div class="settings-info-row"><span>Database</span><strong>SQL Server (MSSQL)</strong></div>
+                  <div class="settings-info-row"><span>Auth</span><strong>JWT (flask-jwt-extended)</strong></div>
+                  <div class="settings-info-row"><span>Tổng đề thi</span><strong id="settingExamCount">—</strong></div>
+                  <div class="settings-info-row"><span>Tổng học viên</span><strong id="settingUserCount">—</strong></div>
                 </div>
               </div>
-
-              <div
-                class="builder-content-area admin-panel"
-                id="builderContentArea"
-              ></div>
+              <div class="panel">
+                <div class="panel-header"><h3>👤 Thông tin quản trị viên</h3></div>
+                <div class="panel-body">
+                  <div class="settings-info-row"><span>Tài khoản</span><strong id="settingAdminUsername">—</strong></div>
+                  <div class="settings-info-row"><span>Họ tên</span><strong id="settingAdminFullname">—</strong></div>
+                  <div class="settings-info-row"><span>Vai trò</span><strong>Quản trị viên (Admin)</strong></div>
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
     </div>
 
-    <div id="crudModal" class="modal-overlay">
-      <div class="modal-content admin-modal">
-        <span class="close-btn" onclick="closeCrudModal()">&times;</span>
-        <div class="modal-header">
-          <h2 id="crudModalTitle">Thêm mới</h2>
+    <!-- ═══════ MODAL: USER FORM ═══════ -->
+    <div id="userModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-card-header">
+          <h2 id="userModalTitle">Thêm học viên mới</h2>
+          <button class="modal-close" data-modal="userModal">&times;</button>
         </div>
-        <form id="crudForm" class="auth-form">
-          <div id="crudFormFields"></div>
-          <button
-            type="submit"
-            class="btn-primary auth-submit"
-            style="margin-top: 20px"
-          >
-            Lưu dữ liệu
-          </button>
+        <form id="userForm" class="modal-form">
+          <input type="hidden" id="userFormId" />
+          <div class="form-group">
+            <label for="userFormFullname">Họ và Tên</label>
+            <input type="text" id="userFormFullname" placeholder="Nhập họ tên..." required />
+          </div>
+          <div class="form-group">
+            <label for="userFormUsername">Tên tài khoản</label>
+            <input type="text" id="userFormUsername" placeholder="Nhập username..." required />
+          </div>
+          <div class="form-group">
+            <label for="userFormEmail">Email</label>
+            <input type="email" id="userFormEmail" placeholder="Nhập email..." />
+          </div>
+          <div class="form-group">
+            <label for="userFormPassword">Mật khẩu <span class="hint" id="passwordHint"></span></label>
+            <input type="password" id="userFormPassword" placeholder="Nhập mật khẩu..." />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-modal="userModal">Huỷ bỏ</button>
+            <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+          </div>
         </form>
       </div>
     </div>
 
-    <script src="./js/admin.js"></script>
+    <!-- ═══════ MODAL: EXAM FORM ═══════ -->
+    <div id="examModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-card-header">
+          <h2 id="examModalTitle">Tạo đề thi mới</h2>
+          <button class="modal-close" data-modal="examModal">&times;</button>
+        </div>
+        <form id="examForm" class="modal-form">
+          <input type="hidden" id="examFormId" />
+          <div class="form-group">
+            <label for="examFormName">Tên đề thi</label>
+            <input type="text" id="examFormName" placeholder="Ví dụ: ETS 2024 Test 1" required />
+          </div>
+          <div class="form-group">
+            <label for="examFormDesc">Mô tả</label>
+            <textarea id="examFormDesc" rows="3" placeholder="Mô tả ngắn về đề thi..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="examFormDuration">Thời gian làm bài (phút)</label>
+            <input type="number" id="examFormDuration" value="120" min="1" required />
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-modal="examModal">Huỷ bỏ</button>
+            <button type="submit" class="btn btn-primary">Lưu đề thi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ═══════ MODAL: QUESTION FORM ═══════ -->
+    <div id="questionModal" class="modal-overlay">
+      <div class="modal-card modal-card-lg">
+        <div class="modal-card-header">
+          <h2 id="questionModalTitle">Thêm câu hỏi</h2>
+          <button class="modal-close" data-modal="questionModal">&times;</button>
+        </div>
+        <form id="questionForm" class="modal-form">
+          <input type="hidden" id="qFormId" />
+          <div class="form-row">
+            <div class="form-group" style="width: 100%;">
+              <label for="qFormPart">Part</label>
+              <select id="qFormPart" required>
+                <option value="1">Part 1 — Photographs</option>
+                <option value="2">Part 2 — Q&A</option>
+                <option value="3">Part 3 — Conversations</option>
+                <option value="4">Part 4 — Talks</option>
+                <option value="5">Part 5 — Incomplete Sentences</option>
+                <option value="6">Part 6 — Text Completion</option>
+                <option value="7">Part 7 — Reading</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="singleMediaSection">
+            <!-- Audio Upload Zone -->
+            <div class="form-group" id="qSingleAudioGroup">
+              <label>Audio câu hỏi</label>
+              <input type="hidden" id="qFormAudio" />
+              <div class="upload-zone" id="qAudioZone" data-type="audio" data-target="qFormAudio" data-preview="qAudioPreview">
+                <div class="upload-zone-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <p>Kéo thả file audio vào đây hoặc <span class="upload-browse">chọn file</span></p>
+                  <span class="upload-hint">MP3, WAV — Tối đa 10MB</span>
+                </div>
+                <input type="file" class="upload-input" accept="audio/*" />
+              </div>
+              <div class="upload-preview" id="qAudioPreview" style="display:none">
+                <audio controls class="preview-audio"></audio>
+                <button type="button" class="btn-remove-upload" title="Xoá audio">✕</button>
+              </div>
+            </div>
+
+            <!-- Image Upload Zone -->
+            <div class="form-group" id="qSingleImageGroup">
+              <label>Hình ảnh câu hỏi</label>
+              <input type="hidden" id="qFormImage" />
+              <div class="upload-zone" id="qImageZone" data-type="image" data-target="qFormImage" data-preview="qImagePreview">
+                <div class="upload-zone-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p>Kéo thả hình ảnh vào đây hoặc <span class="upload-browse">chọn file</span></p>
+                  <span class="upload-hint">JPG, PNG, WEBP — Tối đa 5MB</span>
+                </div>
+                <input type="file" class="upload-input" accept="image/*" />
+              </div>
+              <div class="upload-preview" id="qImagePreview" style="display:none">
+                <img class="preview-image" alt="Preview" />
+                <button type="button" class="btn-remove-upload" title="Xoá ảnh">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GROUP MEDIA SECTION (For Part 3,4,6,7) -->
+          <div id="groupMediaSection" style="display:none" class="panel-media-group">
+            <h4 class="sub-section-title">Media chung cho nhóm</h4>
+            
+            <div class="form-group" id="grpAudioGroup">
+              <label>Audio nhóm (Listening)</label>
+              <div class="upload-zone" id="grpAudioZone" data-type="audio" data-target="grpAudioUrl" data-preview="grpAudioPreview">
+                <div class="upload-zone-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <p>Kéo thả audio nhóm vào đây hoặc <span class="upload-browse">chọn file</span></p>
+                </div>
+                <input type="file" class="upload-input" accept="audio/*" />
+              </div>
+              <input type="hidden" id="grpAudioUrl" />
+              <div class="upload-preview" id="grpAudioPreview" style="display:none">
+                <audio controls class="preview-audio"></audio>
+                <button type="button" class="btn-remove-upload" title="Xoá">✕</button>
+              </div>
+            </div>
+
+            <div class="form-group" id="grpImageGroup">
+              <label>Hình ảnh đính kèm (có thể chọn nhiều ảnh)</label>
+              <div class="upload-zone" id="grpImagesZone">
+                <div class="upload-zone-content">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p>Kéo thả các hình bài đọc vào đây hoặc <span class="upload-browse">chọn file</span></p>
+                </div>
+                <input type="file" class="upload-input" accept="image/*" multiple />
+              </div>
+              <div class="upload-preview-grid" id="grpImagesPreview"></div>
+            </div>
+          </div>
+
+          <!-- DYNAMIC SUB-QUESTIONS -->
+          <h4 class="sub-section-title" id="subQuestionsTitle" style="margin-top:20px; border-bottom: 1px solid var(--admin-border); padding-bottom: 8px;">Nội dung câu hỏi</h4>
+          <div id="subQuestionsContainer">
+            <!-- Dynamic sub-question forms will be injected here -->
+          </div>
+
+          <div style="margin-top: 16px; margin-bottom: 16px;">
+            <button type="button" class="btn btn-ghost" id="btnAddSubQuestion" style="display:none">+ Thêm câu hỏi vào nhóm</button>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-modal="questionModal">Huỷ bỏ</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveQuestion">
+               <span class="btn-text">Lưu</span>
+               <span class="btn-loading" style="display:none">Đang xử lý...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ═══════ MODAL: CONFIRM DELETE ═══════ -->
+    <div id="confirmModal" class="modal-overlay">
+      <div class="modal-card modal-card-sm">
+        <div class="confirm-icon">⚠️</div>
+        <h3 id="confirmTitle">Xác nhận xoá</h3>
+        <p id="confirmMessage">Bạn có chắc chắn muốn xoá? Hành động này không thể hoàn tác.</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" data-modal="confirmModal">Huỷ bỏ</button>
+          <button class="btn btn-danger" id="confirmDeleteBtn">Xoá vĩnh viễn</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ TOAST ═══════ -->
+    <div id="toastContainer"></div>
+
+    <script type="module" src="./js/admin.js"></script>
   </body>
 </html>
