@@ -26,8 +26,7 @@ export async function register(data) {
     return res.json();
 }
 
-// ========== Exam API ==========
-
+// exam api
 export async function getExams() {
     const res = await fetch(`${BASE_URL}/api/exams/`, {
         headers: authHeaders()
@@ -42,11 +41,11 @@ export async function getExamDetail(examId) {
     return res.json();
 }
 
-export async function submitExam(examId, answers, selectedParts = []) {
+export async function submitExam(examId, answers, selectedParts = [], timeSpent = 0) {
     const res = await fetch(`${BASE_URL}/api/exams/${examId}/submit`, {
         method: "POST",
         headers: authHeaders(),
-        body: JSON.stringify({ answers, selectedParts })
+        body: JSON.stringify({ answers, selectedParts, timeSpent })
     });
     return res.json();
 }
@@ -127,4 +126,181 @@ export async function deleteCard(cardId) {
     headers: authHeaders()
   });
   return res.json();
+
+// ========== Admin API — Dashboard ==========
+
+export async function getAdminStats() {
+    const res = await fetch(`${BASE_URL}/api/admin/stats`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+// ========== Admin API — Users ==========
+
+export async function getAdminUsers() {
+    const res = await fetch(`${BASE_URL}/api/admin/users`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function createAdminUser(data) {
+    const res = await fetch(`${BASE_URL}/api/admin/users`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function updateAdminUser(id, data) {
+    const res = await fetch(`${BASE_URL}/api/admin/users/${id}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function deleteAdminUser(id) {
+    const res = await fetch(`${BASE_URL}/api/admin/users/${id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function toggleUserStatus(id) {
+    const res = await fetch(`${BASE_URL}/api/admin/users/${id}/toggle-status`, {
+        method: "PUT",
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+// ========== Admin API — Exams ==========
+
+export async function getAdminExams() {
+    const res = await fetch(`${BASE_URL}/api/admin/exams`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function createAdminExam(data) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function updateAdminExam(id, data) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${id}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function deleteAdminExam(id) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${id}`, {
+        method: "DELETE",
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function toggleExamStatus(id) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${id}/toggle-status`, {
+        method: "PUT",
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+// ========== Admin API — Questions ==========
+
+export async function getExamQuestions(examId) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${examId}/questions`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function createQuestion(examId, data) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${examId}/questions`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function updateQuestion(questionId, data) {
+    const res = await fetch(`${BASE_URL}/api/admin/questions/${questionId}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+    });
+    return res.json();
+}
+
+export async function deleteQuestion(questionId) {
+    const res = await fetch(`${BASE_URL}/api/admin/questions/${questionId}`, {
+        method: "DELETE",
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+export async function getExamGroups(examId) {
+    const res = await fetch(`${BASE_URL}/api/admin/exams/${examId}/groups`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+// ========== Admin API — Flashcard Stats ==========
+
+export async function getFlashcardStats() {
+    const res = await fetch(`${BASE_URL}/api/admin/flashcard-stats`, {
+        headers: authHeaders()
+    });
+    return res.json();
+}
+
+// ========== Admin API — File Upload ==========
+
+export async function uploadFile(file, type = 'image') {
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    const res = await fetch(`${BASE_URL}/api/admin/upload`, {
+        method: "POST",
+        headers: {
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: formData
+    });
+    return res.json();
+}
+
+// ========== Admin API — Group Creation ==========
+
+export async function createGroup(formData) {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${BASE_URL}/api/admin/groups`, {
+        method: "POST",
+        headers: {
+            ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: formData
+    });
+    return res.json();
 }
