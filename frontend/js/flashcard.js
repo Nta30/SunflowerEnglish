@@ -1,46 +1,18 @@
-import {initApp} from "./core.js"
-const defaultDecks = [
-  {
-    id: 1,
-    title: "Từ vựng TOEIC Part 1",
-    description: "Bộ từ cơ bản để luyện mô tả tranh và hành động.",
-    icon: "🪴",
-    cards: [
-      {
-        id: 101,
-        front: "Appreciate",
-        back: "Đánh giá cao, cảm kích",
-        phonetic: "/əˈpriː.ʃi.eɪt/",
-        example: "I really appreciate your help.",
-      },
-      {
-        id: 102,
-        front: "Sunflower",
-        back: "Hoa hướng dương",
-        phonetic: "/ˈsʌnˌflaʊ.ər/",
-        example: "The sunflower always turns towards the sun.",
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Từ vựng Giao tiếp",
-    description: "Các từ thông dụng dùng trong hội thoại hằng ngày.",
-    icon: "🌻",
-    cards: [
-      {
-        id: 201,
-        front: "Awesome",
-        back: "Tuyệt vời",
-        phonetic: "/ˈɔː.səm/",
-        example: "You did an awesome job!",
-      },
-    ],
-  },
-];
+import { initApp } from "./core.js";
+import {
+  getDecks,
+  getDeckDetail,
+  createDeck as createDeckApi,
+  updateDeck as updateDeckApi,
+  deleteDeck as deleteDeckApi,
+  createCard as createCardApi,
+  updateCard as updateCardApi,
+  deleteCard as deleteCardApi
+} from "./api.js";
 
-document.addEventListener("DOMContentLoaded",async () => {
-  await initApp()
+document.addEventListener("DOMContentLoaded", async () => {
+  await initApp();
+
   const logoutBtn = document.getElementById("logoutBtn");
 
   const deckListView = document.getElementById("deckListView");
@@ -106,11 +78,11 @@ document.addEventListener("DOMContentLoaded",async () => {
   let currentReviewIndex = 0;
   let isReviewCardFlipped = false;
 
-  function initializeApp() {
+  async function initializeApp() {
     setupLogout();
-    loadDecksFromStorage();
-    renderDecks();
     bindEvents();
+    updateDeckPreview();
+    await fetchAndRenderDecks();
   }
 
   function setupLogout() {
@@ -119,28 +91,9 @@ document.addEventListener("DOMContentLoaded",async () => {
     logoutBtn.addEventListener("click", (event) => {
       event.preventDefault();
       localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("token");
       window.location.href = "index.html";
     });
-  }
-
-  function loadDecksFromStorage() {
-    const savedDecks = localStorage.getItem("sunflower_flashcard_decks");
-
-    try {
-      if (savedDecks) {
-        deckList = JSON.parse(savedDecks);
-      } else {
-        deckList = JSON.parse(JSON.stringify(defaultDecks));
-        saveDecksToStorage();
-      }
-    } catch (error) {
-      deckList = JSON.parse(JSON.stringify(defaultDecks));
-      saveDecksToStorage();
-    }
-  }
-
-  function saveDecksToStorage() {
-    localStorage.setItem("sunflower_flashcard_decks", JSON.stringify(deckList));
   }
 
   function bindEvents() {
@@ -163,9 +116,9 @@ document.addEventListener("DOMContentLoaded",async () => {
       });
     });
 
-    createDeckForm.addEventListener("submit", (event) => {
+    createDeckForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      createDeck();
+      await handleCreateOrEditDeck();
     });
 
     backToDeckListBtn.addEventListener("click", showDeckListView);
@@ -181,13 +134,14 @@ document.addEventListener("DOMContentLoaded",async () => {
       }
     });
 
-    addCardForm.addEventListener("submit", (event) => {
+    addCardForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      saveCard();
+      await saveCard();
     });
+
     document.addEventListener("click", () => {
       document.querySelectorAll(".deck-dropdown.show").forEach((menu) => {
-      menu.classList.remove("show");
+        menu.classList.remove("show");
       });
     });
 
@@ -196,6 +150,77 @@ document.addEventListener("DOMContentLoaded",async () => {
     flipReviewBtn.addEventListener("click", toggleReviewCard);
     prevReviewBtn.addEventListener("click", showPreviousReviewCard);
     nextReviewBtn.addEventListener("click", showNextReviewCard);
+  }
+
+  function normalizeCard(card) {
+    return {
+      id: card.id ?? card.FlashCardId ?? card.flashcard_id ?? card.maThe ?? Date.now(),
+      front: card.front ?? card.Tu ?? "",
+      back: card.back ?? card.Nghia ?? "",
+      phonetic: card.phonetic ?? card.PhienAm ?? "",
+      example: card.example ?? card.ViDu ?? ""
+    };
+  }
+
+  function normalizeDeck(deck) {
+    const rawCards = Array.isArray(deck.cards)
+      ? deck.cards
+      : Array.isArray(deck.flashcards)
+      ? deck.flashcards
+      : [];
+
+    return {
+      id: deck.id ?? deck.MaBoTu ?? deck.deckId,
+      title: deck.title ?? deck.TenBoTu ?? "",
+      description: deck.description ?? deck.MoTa ?? "",
+      icon: deck.icon ?? deck.Icon ?? "🌱",
+      cards: rawCards.map(normalizeCard)
+    };
+  }
+
+  function extractDeckArray(response) {
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response?.data)) return response.data;
+    if (Array.isArray(response?.decks)) return response.decks;
+    if (Array.isArray(response?.result)) return response.result;
+    return [];
+  }
+
+  async function fetchAndRenderDecks() {
+    try {
+      const response = await getDecks();
+      const rawDecks = extractDeckArray(response);
+      deckList = rawDecks.map(normalizeDeck);
+      renderDecks();
+    } catch (error) {
+      console.error("Lỗi lấy danh sách bộ từ:", error);
+      deckList = [];
+      renderDecks();
+      alert("Không tải được danh sách bộ từ.");
+    }
+  }
+
+  async function refreshCurrentDeckDetail() {
+    if (!currentDeckId) return;
+
+    try {
+      const response = await getDeckDetail(currentDeckId);
+      const normalizedDeck = normalizeDeck(response);
+
+      const deckIndex = deckList.findIndex((item) => String(item.id) === String(currentDeckId));
+
+      if (deckIndex !== -1) {
+        deckList[deckIndex] = normalizedDeck;
+      } else {
+        deckList.push(normalizedDeck);
+      }
+
+      updateDeckDetail();
+      renderDecks();
+    } catch (error) {
+      console.error("Lỗi tải lại chi tiết bộ từ:", error);
+      alert("Không tải lại được chi tiết bộ từ.");
+    }
   }
 
   function renderDecks() {
@@ -210,7 +235,7 @@ document.addEventListener("DOMContentLoaded",async () => {
         </div>
       `;
       return;
-  }
+    }
 
     deckList.forEach((deck) => {
       const deckCard = document.createElement("div");
@@ -226,9 +251,9 @@ document.addEventListener("DOMContentLoaded",async () => {
           </div>
         </div>
 
-        <div class="deck-icon">${deck.icon}</div>
-        <h3 class="deck-title">${deck.title}</h3>
-        <p class="deck-description">${deck.description || "Chưa có mô tả cho bộ từ này."}</p>
+        <div class="deck-icon">${escapeHtml(deck.icon)}</div>
+        <h3 class="deck-title">${escapeHtml(deck.title)}</h3>
+        <p class="deck-description">${escapeHtml(deck.description || "Chưa có mô tả cho bộ từ này.")}</p>
         <span class="deck-stats">${deck.cards.length} thẻ</span>
       `;
 
@@ -249,34 +274,52 @@ document.addEventListener("DOMContentLoaded",async () => {
         deckDropdown.classList.toggle("show");
       });
 
+
+
       editDeckBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        deckDropdown.classList.remove("show");
-        openEditDeckModal(deck.id);
+      event.stopPropagation();
+      deckDropdown.classList.remove("show");
+      openEditDeckModal(deck.id);
       });
 
-      deleteDeckBtn.addEventListener("click", (event) => {
+      deleteDeckBtn.addEventListener("click", async (event) => {
         event.stopPropagation();
         deckDropdown.classList.remove("show");
-        deleteDeck(deck.id);
+        await deleteDeckHandler(deck.id);
       });
 
-      deckCard.addEventListener("click", () => {
-        openDeckDetail(deck.id);
+      deckCard.addEventListener("click", async () => {
+        await openDeckDetail(deck.id);
       });
 
       deckGrid.appendChild(deckCard);
     });
   }
 
-  function openDeckDetail(deckId) {
-    currentDeckId = deckId;
-    updateDeckDetail();
-    showDeckDetailView();
+  async function openDeckDetail(deckId) {
+    try {
+      currentDeckId = deckId;
+      const response = await getDeckDetail(deckId);
+      const normalizedDeck = normalizeDeck(response);
+
+      const deckIndex = deckList.findIndex((item) => String(item.id) === String(deckId));
+      if (deckIndex !== -1) {
+        deckList[deckIndex] = normalizedDeck;
+      } else {
+        deckList.push(normalizedDeck);
+      }
+
+      updateDeckDetail();
+      showDeckDetailView();
+    } catch (error) {
+      console.error("Lỗi lấy chi tiết bộ từ:", error);
+      alert("Không tải được chi tiết bộ từ.");
+    }
   }
+
   function openEditDeckModal(deckId) {
-    const deck = deckList.find((item) => item.id === deckId);
-      if (!deck) return;
+    const deck = deckList.find((item) => String(item.id) === String(deckId));
+    if (!deck) return;
 
     editingDeckId = deckId;
 
@@ -294,17 +337,18 @@ document.addEventListener("DOMContentLoaded",async () => {
         iconButton.classList.remove("active");
       }
     });
-  }
 
-  updateDeckPreview();
+    updateDeckPreview();
+    createDeckModal.classList.add("show");
+    deckTitleInput.focus();
+  }
 
   function updateDeckDetail() {
     const currentDeck = getCurrentDeck();
     if (!currentDeck) return;
 
     detailDeckTitle.innerText = currentDeck.title;
-    detailDeckDescription.innerText =
-      currentDeck.description || "Chưa có mô tả cho bộ từ này.";
+    detailDeckDescription.innerText = currentDeck.description || "Chưa có mô tả cho bộ từ này.";
     detailCardCount.innerText = `${currentDeck.cards.length} thẻ`;
 
     renderCardsOfCurrentDeck();
@@ -348,8 +392,8 @@ document.addEventListener("DOMContentLoaded",async () => {
         <div class="flip-card-inner">
           <div class="flip-card-front">
             <div class="card-actions">
-                <button class="card-action-btn edit-card-btn" type="button" title="Sửa thẻ">🖋️</button>
-                <button class="card-action-btn delete-card-btn" type="button" title="Xóa thẻ">❌</button>
+              <button class="card-action-btn edit-card-btn" type="button" title="Sửa thẻ">🖋️</button>
+              <button class="card-action-btn delete-card-btn" type="button" title="Xóa thẻ">❌</button>
             </div>
 
             <h3>${escapeHtml(card.front)}</h3>
@@ -380,9 +424,9 @@ document.addEventListener("DOMContentLoaded",async () => {
       });
 
       deleteBtns.forEach((btn) => {
-        btn.addEventListener("click", (event) => {
+        btn.addEventListener("click", async (event) => {
           event.stopPropagation();
-          deleteCard(card.id);
+          await deleteCardHandler(card.id);
         });
       });
 
@@ -430,9 +474,7 @@ document.addEventListener("DOMContentLoaded",async () => {
     const deckTitleValue = deckTitleInput.value.trim();
     const deckDescriptionValue = deckDescriptionInput.value.trim();
 
-    previewDeckTitle.innerText =
-      deckTitleValue === "" ? "Tên bộ từ của bạn" : deckTitleValue;
-
+    previewDeckTitle.innerText = deckTitleValue === "" ? "Tên bộ từ của bạn" : deckTitleValue;
     previewDeckDescription.innerText =
       deckDescriptionValue === ""
         ? "Mô tả của bộ từ sẽ hiển thị ở đây."
@@ -455,7 +497,7 @@ document.addEventListener("DOMContentLoaded",async () => {
     updateDeckPreview();
   }
 
-  function createDeck() {
+  async function handleCreateOrEditDeck() {
     const deckTitleValue = deckTitleInput.value.trim();
     const deckDescriptionValue = deckDescriptionInput.value.trim();
 
@@ -465,50 +507,63 @@ document.addEventListener("DOMContentLoaded",async () => {
       return;
     }
 
-    if (editingDeckId === null){
-      const newDeck = {
-        id: Date.now(),
-        title: deckTitleValue,
-        description: deckDescriptionValue,
-        icon: selectedDeckIcon,
-        cards: [],
-      };
-      deckList.unshift(newDeck);
-    }else{
-      const deckIndex = deckList.findIndex((deck) => deck.id === editingDeckId);
-      if (deckIndex !== -1) {
-        deckList[deckIndex] = {
-        ...deckList[deckIndex],
-        title: deckTitleValue,
-        description: deckDescriptionValue,
-        icon: selectedDeckIcon,
-        };
+    const payload = {
+      title: deckTitleValue,
+      description: deckDescriptionValue,
+      icon: selectedDeckIcon
+    };
+
+    try {
+      if (editingDeckId === null) {
+        const response = await createDeckApi(payload);
+
+        if (response?.message && response.message.toLowerCase().includes("error")) {
+          throw new Error(response.message);
+        }
+
+        await fetchAndRenderDecks();
+        closeCreateDeckModal();
+        return;
       }
+      const response = await updateDeckApi(editingDeckId, payload);
+      if (response?.message && response.message.toLowerCase().includes("error")) {
+      throw new Error(response.message);
+      }
+      await fetchAndRenderDecks();
+
+      if (String(currentDeckId) === String(editingDeckId)) {
+        await refreshCurrentDeckDetail();
+      }
+      closeCreateDeckModal();
+
+    } catch (error) {
+      console.error("Lỗi tạo bộ từ:", error);
+      alert("Tạo bộ từ thất bại.");
     }
-    saveDecksToStorage();
-    renderDecks();
-
-    if (currentDeckId === editingDeckId) {
-      updateDeckDetail();
-    }
-
-    closeCreateDeckModal();
-
   }
-  function deleteDeck(deckId) {
-    const deck = deckList.find((item) => item.id === deckId);
+
+  async function deleteDeckHandler(deckId) {
+    const deck = deckList.find((item) => String(item.id) === String(deckId));
     if (!deck) return;
 
     const confirmDelete = window.confirm(`Bạn có chắc muốn xóa bộ từ "${deck.title}" không?`);
     if (!confirmDelete) return;
 
-    deckList = deckList.filter((item) => item.id !== deckId);
+    try {
+      const response = await deleteDeckApi(deckId);
 
-    saveDecksToStorage();
-    renderDecks();
+      if (response?.message && response.message.toLowerCase().includes("error")) {
+        throw new Error(response.message);
+      }
 
-    if (currentDeckId === deckId) {
-      showDeckListView();
+      await fetchAndRenderDecks();
+
+      if (String(currentDeckId) === String(deckId)) {
+        showDeckListView();
+      }
+    } catch (error) {
+      console.error("Lỗi xóa bộ từ:", error);
+      alert("Xóa bộ từ thất bại.");
     }
   }
 
@@ -528,7 +583,7 @@ document.addEventListener("DOMContentLoaded",async () => {
     const currentDeck = getCurrentDeck();
     if (!currentDeck) return;
 
-    const card = currentDeck.cards.find((item) => item.id === cardId);
+    const card = currentDeck.cards.find((item) => String(item.id) === String(cardId));
     if (!card) return;
 
     editingCardId = cardId;
@@ -556,9 +611,8 @@ document.addEventListener("DOMContentLoaded",async () => {
     addCardForm.reset();
   }
 
-  function saveCard() {
-    const currentDeck = getCurrentDeck();
-    if (!currentDeck) return;
+  async function saveCard() {
+    if (!currentDeckId) return;
 
     const frontValue = cardFrontInput.value.trim();
     const backValue = cardBackInput.value.trim();
@@ -577,48 +631,50 @@ document.addEventListener("DOMContentLoaded",async () => {
       return;
     }
 
-    if (editingCardId === null) {
-      const newCard = {
-        id: Date.now(),
-        front: frontValue,
-        back: backValue,
-        phonetic: phoneticValue,
-        example: exampleValue,
-      };
+    const payload = {
+      front: frontValue,
+      back: backValue,
+      phonetic: phoneticValue,
+      example: exampleValue
+    };
 
-      currentDeck.cards.unshift(newCard);
-    } else {
-      const cardIndex = currentDeck.cards.findIndex((card) => card.id === editingCardId);
+    try {
+      let response;
 
-      if (cardIndex !== -1) {
-        currentDeck.cards[cardIndex] = {
-          ...currentDeck.cards[cardIndex],
-          front: frontValue,
-          back: backValue,
-          phonetic: phoneticValue,
-          example: exampleValue,
-        };
+      if (editingCardId === null) {
+        response = await createCardApi(currentDeckId, payload);
+      } else {
+        response = await updateCardApi(editingCardId, payload);
       }
-    }
 
-    saveDecksToStorage();
-    renderDecks();
-    renderCardsOfCurrentDeck();
-    closeAddCardModal();
+      if (response?.message && response.message.toLowerCase().includes("error")) {
+        throw new Error(response.message);
+      }
+
+      await refreshCurrentDeckDetail();
+      closeAddCardModal();
+    } catch (error) {
+      console.error("Lỗi lưu thẻ:", error);
+      alert("Lưu thẻ thất bại.");
+    }
   }
 
-  function deleteCard(cardId) {
-    const currentDeck = getCurrentDeck();
-    if (!currentDeck) return;
-
+  async function deleteCardHandler(cardId) {
     const confirmDelete = window.confirm("Bạn có chắc muốn xóa thẻ này không?");
     if (!confirmDelete) return;
 
-    currentDeck.cards = currentDeck.cards.filter((card) => card.id !== cardId);
+    try {
+      const response = await deleteCardApi(cardId);
 
-    saveDecksToStorage();
-    renderDecks();
-    renderCardsOfCurrentDeck();
+      if (response?.message && response.message.toLowerCase().includes("error")) {
+        throw new Error(response.message);
+      }
+
+      await refreshCurrentDeckDetail();
+    } catch (error) {
+      console.error("Lỗi xóa thẻ:", error);
+      alert("Xóa thẻ thất bại.");
+    }
   }
 
   function openReviewMode() {
@@ -686,14 +742,14 @@ document.addEventListener("DOMContentLoaded",async () => {
   }
 
   function getCurrentDeck() {
-    return deckList.find((deck) => deck.id === currentDeckId);
+    return deckList.find((deck) => String(deck.id) === String(currentDeckId));
   }
 
   function escapeHtml(text) {
     const tempDiv = document.createElement("div");
-    tempDiv.innerText = text;
+    tempDiv.innerText = text ?? "";
     return tempDiv.innerHTML;
   }
 
-  initializeApp();
+  await initializeApp();
 });
