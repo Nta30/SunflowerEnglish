@@ -34,6 +34,7 @@ class ExamEngine {
     this.timeSeconds = isFullTest
       ? (examData.ThoiGianLam || 120) * 60
       : (customMinutes || 30) * 60;
+    this.totalTimeSeconds = this.timeSeconds;
 
     this._timerInterval = null;
     this.onTimerTick = null;
@@ -113,7 +114,8 @@ class ExamEngine {
 
   buildSubmitPayload() {
     const parts = this.isFullTest ? [] : [...new Set(this.questions.map(q => q.TenPart))];
-    return { answers: this.answers, selectedParts: parts };
+    const timeSpent = this.totalTimeSeconds - Math.max(0, this.timeSeconds);
+    return { answers: this.answers, selectedParts: parts, timeSpent };
   }
 }
 
@@ -170,14 +172,14 @@ function renderLibrary(filter) {
   }
   
   grid.innerHTML = list.map(exam => {
-    const sc = `status-${exam.TrangThai || "new"}`;
+    const sc = `status-${exam.TrangThai}`;
     return `
       <div class="lib-card">
-        <span class="lib-status ${sc}">${exam.TrangThaiText || "Chưa làm"}</span>
+        <span class="lib-status ${sc}">${exam.TrangThaiText}</span>
         <h3>${exam.TenDeThi}</h3>
         <p class="lib-tags">${exam.MoTa ? exam.MoTa : ""}</p>
         <button class="lib-action" onclick="openModeModal(${exam.MaDeThi})">
-          ${exam.TrangThai === "done" ? "Làm lại" : exam.TrangThai === "prog" ? "Tiếp tục" : "Làm bài ngay"}
+          ${exam.TrangThai === "done" ? "Làm lại" :  "Làm bài ngay"}
         </button>
       </div>`;
   }).join("");
@@ -235,15 +237,13 @@ function calcDuration(start, end) {
   return `${m}p${s.toString().padStart(2, "0")}s`;
 }
 
-// ============================================================
-// DASHBOARD
-// ============================================================
+// dashboard
 function updateDashboard() {
   renderHistory();
   
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
   
-  // Nếu chưa có lịch sử làm bài
+  // chua co lich su thi
   if (!examHistory || !examHistory.length) { 
     ["statBest", "statAvg", "statLowest", "statCount"].forEach(id => set(id, "--")); 
     set("lcScoreLabel", "-- / 495");
@@ -253,38 +253,35 @@ function updateDashboard() {
     return; 
   }
 
-  // Lọc ra các bài đã nộp (có tổng điểm)
+  // cac diem bai thi da lam
   const scores = examHistory.map(h => h.DiemSo || 0);
   const lcScores = examHistory.map(h => h.DiemLC || 0);
   const rcScores = examHistory.map(h => h.DiemRC || 0);
 
-  // 1. Cập nhật 4 thẻ Stats tổng quan
+  // cap nhat thong ke tong quan
   set("statBest", Math.max(...scores));
   set("statLowest", Math.min(...scores));
   set("statAvg", Math.round(scores.reduce((a, b) => a + b, 0) / scores.length));
   set("statCount", examHistory.length);
 
-  // 2. Tính điểm trung bình kỹ năng LC & RC
+  // diem trung binh tung ky nang
   const avgLC = Math.round(lcScores.reduce((a, b) => a + b, 0) / lcScores.length);
   const avgRC = Math.round(rcScores.reduce((a, b) => a + b, 0) / rcScores.length);
 
   set("lcScoreLabel", `${avgLC} / 495`);
   set("rcScoreLabel", `${avgRC} / 495`);
 
-  // 3. Chạy animation thanh tiến trình
-  // Dùng setTimeout để đảm bảo CSS Transition hoạt động mượt mà
+  // animation bar
   setTimeout(() => {
     const lcBar = document.getElementById("lcBar");
     const rcBar = document.getElementById("rcBar");
-    // Chiếm % so với điểm tối đa là 495
+    
     if (lcBar) lcBar.style.width = `${(avgLC / 495) * 100}%`;
     if (rcBar) rcBar.style.width = `${(avgRC / 495) * 100}%`;
   }, 100);
 }
 
-// ============================================================
-// START EXAM MODAL
-// ============================================================
+// start exam modal
 window.openModeModal = function (examId) {
   pendingExamId = examId;
   const exam = allExams.find(e => e.MaDeThi === examId);
@@ -691,7 +688,7 @@ async function doSubmit() {
 
   try {
     const payload = engine.buildSubmitPayload();
-    const result = await submitExam(currentExamId, payload.answers, payload.selectedParts);
+    const result = await submitExam(currentExamId, payload.answers, payload.selectedParts, payload.timeSpent);
 
     lastResultSessionId = result.MaPhien;
     const total = result.TongDiem ?? result.DiemSo ?? 0;

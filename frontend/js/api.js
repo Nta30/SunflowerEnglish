@@ -41,11 +41,11 @@ export async function getExamDetail(examId) {
     return res.json();
 }
 
-export async function submitExam(examId, answers, selectedParts = []) {
+export async function submitExam(examId, answers, selectedParts = [], timeSpent = 0) {
     const res = await fetch(`${BASE_URL}/api/exams/${examId}/submit`, {
         method: "POST",
         headers: authHeaders(),
-        body: JSON.stringify({ answers, selectedParts })
+        body: JSON.stringify({ answers, selectedParts, timeSpent })
     });
     return res.json();
 }

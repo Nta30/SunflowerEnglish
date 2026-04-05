@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import DeThi, CauHoi, DapAn, NhomCauHoi, AnhNhomCauHoi, PhienLamBai, ChiTietPhienLam
 from app import db
-from datetime import datetime
+from datetime import datetime, timedelta
 
 exam_bp = Blueprint('exam', __name__)
 
@@ -90,6 +90,7 @@ def submit_exam(exam_id):
     data = request.get_json()
     answers = data.get('answers', {})
     selected_parts = data.get('selectedParts', [])
+    time_spent_seconds = data.get('timeSpent', 0)
 
     exam = DeThi.query.get_or_404(exam_id)
     questions = CauHoi.query.filter_by(MaDeThi=exam_id).all()
@@ -102,11 +103,14 @@ def submit_exam(exam_id):
     wrong = 0
     unanswered = 0
 
+    end_time = datetime.now()
+    start_time = end_time - timedelta(seconds=time_spent_seconds)
+
     phien = PhienLamBai(
         MaNguoiDung=user_id,
         MaDeThi=exam_id,
-        ThoiGianBatDau=datetime.utcnow(),
-        ThoiGianKetThuc=datetime.utcnow(),
+        ThoiGianBatDau=start_time,
+        ThoiGianKetThuc=end_time,
         TrangThaiNop=True
     )
     db.session.add(phien)
@@ -194,8 +198,8 @@ def get_history():
             'MaPhien': s.MaPhien,
             'TenDeThi': exam.TenDeThi if exam else 'N/A',
             'DiemSo': s.DiemSo,
-            'DiemLC': s.DiemLC or 0, # Thêm dòng này
-            'DiemRC': s.DiemRC or 0, # Thêm dòng này
+            'DiemLC': s.DiemLC or 0,
+            'DiemRC': s.DiemRC or 0,
             'SoCauDung': s.SoCauDung,
             'SoCauSai': s.SoCauSai,
             'SoCauKhongChon': s.SoCauKhongChon,
