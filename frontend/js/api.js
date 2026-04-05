@@ -63,6 +63,69 @@ export async function getSessionDetail(sessionId) {
     });
     return res.json();
 }
+// ========== DECKS API ==========
+export async function getDecks() {
+    const res = await fetch(`${BASE_URL}/api/flashcards/decks`, {
+    method: "GET",
+    headers: authHeaders()
+  });
+  return res.json();
+}
+export async function getDeckDetail(deckId) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/decks/${deckId}`, {
+    method: "GET",
+    headers: authHeaders()
+  });
+  return res.json();
+}
+
+export async function createDeck(data) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/decks`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+export async function deleteDeck(deckId) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/decks/${deckId}`, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  return res.json();
+}
+export async function updateDeck(deckId,data) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/decks/${deckId}`,{
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+// ========== FLASHCARD API ==========
+
+export async function createCard(deckId, data) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/decks/${deckId}/cards`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+export async function updateCard(cardId, data) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/cards/${cardId}`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+export async function deleteCard(cardId) {
+  const res = await fetch(`${BASE_URL}/api/flashcards/cards/${cardId}`, {
+    method: "DELETE",
+    headers: authHeaders()
+  });
+  return res.json();
 
 // ========== Admin API — Dashboard ==========
 
