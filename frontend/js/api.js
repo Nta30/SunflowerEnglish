@@ -126,7 +126,7 @@ export async function deleteCard(cardId) {
     headers: authHeaders()
   });
   return res.json();
-
+}
 // ========== Admin API — Dashboard ==========
 
 export async function getAdminStats() {
