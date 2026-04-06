@@ -608,7 +608,6 @@
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-  justify-content: center; /* Ép nội dung ra giữa theo chiều dọc nếu ít câu */
 }
 
 /* Khi CÓ ẢNH: Chia 2 cột (Trái: Ảnh, Phải: Câu hỏi) */

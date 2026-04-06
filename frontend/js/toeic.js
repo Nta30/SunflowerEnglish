@@ -358,9 +358,7 @@ async function startExam() {
   }
 }
 
-// ============================================================
-// EXAM AREA SHOW/HIDE
-// ============================================================
+// show/hide exam area
 function showExamArea() {
   document.getElementById("toeicLayout").style.display = "none";
   document.getElementById("examArea").style.display = "flex";
@@ -372,9 +370,7 @@ function hideExamArea() {
   document.getElementById("toeicLayout").style.display = "flex";
 }
 
-// ============================================================
-// RENDER QUESTION / GROUP
-// ============================================================
+// render question/group item
 function renderCurrentItem() {
   if (!engine) return;
   const item = engine.currentItem;
@@ -510,9 +506,7 @@ function buildQuestionHTML(q, selectedAnswerId, isReview) {
   return html;
 }
 
-// ============================================================
-// AUDIO (Chỉ dùng khi làm bài thật)
-// ============================================================
+// audio
 function playAudio(url) {
   const audio = document.getElementById("examAudio");
   if (!url || !audio) return;
@@ -562,9 +556,7 @@ function checkListeningDone() {
   }
 }
 
-// ============================================================
-// LISTENING HUD (Chỉ Test Mode)
-// ============================================================
+// listening hud/test mode
 function showListeningHUD(item) {
   const hud = document.getElementById("listeningHud");
   if (!hud || !engine) return;
@@ -588,9 +580,7 @@ function hideListeningHUD() {
   if (hud) hud.style.display = "none";
 }
 
-// ============================================================
-// PALETTE
-// ============================================================
+// palette
 function buildPalette() {
   if (!engine) return;
   const container = document.getElementById("paletteContainer");
@@ -634,9 +624,7 @@ function updatePaletteCurrent() {
   });
 }
 
-// ============================================================
-// TIMER
-// ============================================================
+// timer
 function updateTimer(seconds) {
   const el = document.getElementById("timerDisplay");
   if (!el || !engine) return;
@@ -646,9 +634,7 @@ function updateTimer(seconds) {
   if (seconds <= 60)  el.classList.add("danger");
 }
 
-// ============================================================
-// EXAM CONTROLS
-// ============================================================
+// exam controls
 function initExamControls() {
   document.getElementById("exitExamBtn")?.addEventListener("click", () => {
     if (!isReviewMode) {
@@ -718,9 +704,7 @@ async function doSubmit() {
   }
 }
 
-// ============================================================
-// RESULT MODAL & REVIEW HISTORY
-// ============================================================
+// result modal and history review
 function initResultModal() {
   document.getElementById("closeResultBtn")?.addEventListener("click", () => {
     document.getElementById("resultModal").classList.remove("active");
@@ -785,9 +769,7 @@ window.openHistoryDetail = async function (sessionId) {
   }
 };
 
-// ============================================================
-// HELPERS
-// ============================================================
+// helper
 function setTab(tabName) {
   const tabEl = document.querySelector(`.sidebar-menu li[data-tab="${tabName}"]`);
   if (tabEl) tabEl.click();

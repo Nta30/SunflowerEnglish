@@ -8,10 +8,7 @@ import {
 } from './api.js';
 import { isLoggedIn } from './auth.js';
 
-// ══════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════
-
+// Global state for admin panel
 const State = {
   users: [],
   exams: [],
@@ -22,10 +19,7 @@ const State = {
   pendingDeleteFn: null,
 };
 
-// ══════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════
-
+// init 
 document.addEventListener('DOMContentLoaded', () => {
   if (!isLoggedIn() || localStorage.getItem('isAdmin') !== 'true') {
     alert('⛔ Bạn không có quyền truy cập!');
@@ -43,10 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadDashboard();
 });
 
-// ══════════════════════════════════════════
-//  ADMIN INFO
-// ══════════════════════════════════════════
-
+// admin info
 function initAdminInfo() {
   try {
     const info = JSON.parse(localStorage.getItem('user_info'));
@@ -59,10 +50,7 @@ function initAdminInfo() {
   } catch (e) { /* ignore */ }
 }
 
-// ══════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════
-
+// navigation and tab management
 const TAB_META = {
   dashboard: { title: 'Bảng điều khiển', subtitle: 'Tổng quan hệ thống Sunflower English', loader: loadDashboard },
   users: { title: 'Quản lý Người dùng', subtitle: 'Quản lý tài khoản học viên trên hệ thống', loader: loadUsers },
@@ -114,10 +102,7 @@ function initSidebarToggle() {
   }
 }
 
-// ══════════════════════════════════════════
-//  CLOCK
-// ══════════════════════════════════════════
-
+// live clock
 function initClock() {
   const el = document.getElementById('liveClock');
   function update() {
@@ -131,10 +116,8 @@ function initClock() {
   setInterval(update, 30000);
 }
 
-// ══════════════════════════════════════════
-//  MODALS
-// ══════════════════════════════════════════
 
+// modals
 function initModals() {
   // Close modal buttons
   document.querySelectorAll('[data-modal]').forEach(btn => {
@@ -167,10 +150,7 @@ function closeModal(id) {
   document.getElementById(id).classList.remove('active');
 }
 
-// ══════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════
-
+// toast
 function showToast(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
@@ -186,10 +166,7 @@ function showToast(message, type = 'info') {
   }, 3500);
 }
 
-// ══════════════════════════════════════════
-//  EVENT LISTENERS
-// ══════════════════════════════════════════
-
+// event listeners for admin actions
 function initEventListeners() {
   // User form
   document.getElementById('btnAddUser').addEventListener('click', () => openUserModal());
@@ -225,10 +202,8 @@ function initEventListeners() {
   initUploadZones();
 }
 
-// ══════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════
 
+// dashboard
 async function loadDashboard() {
   try {
     const stats = await getAdminStats();
@@ -291,10 +266,8 @@ function animateCounter(id, target) {
   requestAnimationFrame(step);
 }
 
-// ══════════════════════════════════════════
-//  USERS
-// ══════════════════════════════════════════
 
+// users
 async function loadUsers() {
   try {
     const users = await getAdminUsers();
@@ -422,10 +395,8 @@ window._adminDeleteUser = function (id) {
   openModal('confirmModal');
 };
 
-// ══════════════════════════════════════════
-//  EXAMS
-// ══════════════════════════════════════════
 
+// exams
 async function loadExams() {
   // Reset to list view
   document.getElementById('examListView').style.display = '';
@@ -560,10 +531,8 @@ window._adminManageQuestions = function (examId, examName) {
   loadQuestions(examId);
 };
 
-// ══════════════════════════════════════════
-//  QUESTIONS
-// ══════════════════════════════════════════
 
+// questions
 async function loadQuestions(examId) {
   const grid = document.getElementById('questionsGrid');
   grid.innerHTML = '<div class="empty-state-box">Đang tải câu hỏi...</div>';
@@ -652,7 +621,7 @@ function openQuestionModal(question = null) {
   document.getElementById('qFormId').value = isEdit ? question.id : '';
   
   const partSelect = document.getElementById('qFormPart');
-  partSelect.value = isEdit ? question.part : 5;
+  partSelect.value = isEdit ? question.part : 1;
   partSelect.disabled = isEdit; // Ngăn đổi Part khi đang sửa
   
   // Clear forms
@@ -898,10 +867,7 @@ window._adminDeleteQuestion = function (id) {
   openModal('confirmModal');
 };
 
-// ══════════════════════════════════════════
-//  FILE UPLOAD SYSTEM
-// ══════════════════════════════════════════
-
+// file uploads
 function initUploadZones() {
   // Single-file upload zones (question audio/image)
   document.querySelectorAll('.upload-zone[data-target]').forEach(zone => {
@@ -1093,19 +1059,11 @@ async function loadFlashcardStats() {
   }
 }
 
-// ══════════════════════════════════════════
-//  SETTINGS
-// ══════════════════════════════════════════
 
-function loadSettings() {
-  // Settings data is mostly static + loaded from dashboard stats
-  // Already populated by initAdminInfo and loadDashboard
-}
+// settings
+function loadSettings() {}
 
-// ══════════════════════════════════════════
-//  UTILITIES
-// ══════════════════════════════════════════
-
+// ultils
 function esc(str) {
   if (!str) return '';
   const div = document.createElement('div');

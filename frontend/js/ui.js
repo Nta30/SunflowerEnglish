@@ -41,7 +41,6 @@ export function updateUIOnLogin(){
     const heroTitle = document.getElementById("heroTitle");
     const heroDesc = document.getElementById("heroDesc");
     const heroCtaBtn = document.getElementById("heroCtaBtn");
-    const practiceTestsSection = document.getElementById("practiceTestsSection");
 
     if (heroTitle && heroDesc && heroCtaBtn) {
       heroTitle.innerHTML =
@@ -49,11 +48,6 @@ export function updateUIOnLogin(){
       heroDesc.innerText =
         'Hôm nay bạn muốn tưới thêm kiến thức cho "vườn TOEIC" của mình hay ôn tập Flashcard nào?';
       heroCtaBtn.innerText = "Vào học ngay thôi 🚀";
-
-      if (practiceTestsSection) {
-        practiceTestsSection.style.display = "block";
-        practiceTestsSection.style.animation = "fadeIn 0.8s ease-out";
-      }
     }
 }
 
@@ -62,7 +56,6 @@ export function updateUIOnLogout() {
     const heroTitle = document.getElementById("heroTitle");
     const heroDesc = document.getElementById("heroDesc");
     const heroCtaBtn = document.getElementById("heroCtaBtn");
-    const practiceTestsSection = document.getElementById("practiceTestsSection");
 
     if (heroTitle && heroDesc && heroCtaBtn) {
       heroTitle.innerHTML =
@@ -70,10 +63,6 @@ export function updateUIOnLogout() {
       heroDesc.innerText =
         'Nền tảng học tiếng Anh cực "chill", giúp bạn ghi nhớ từ vựng và chinh phục TOEIC mỗi ngày như một thói quen vui vẻ!';
       heroCtaBtn.innerText = "Bắt đầu trồng hoa ngay 🌱";
-
-      if (practiceTestsSection) {
-        practiceTestsSection.style.display = "none";
-      }
     }
 }
 
@@ -98,4 +87,4 @@ export function showToast(message, type) {
       toast.remove();
     }, 400);
   }, 3000);
-}
+}

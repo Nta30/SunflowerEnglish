@@ -224,7 +224,7 @@ def get_session_detail(session_id):
     question_ids = [d.MaCauHoi for d in details]
 
     # Nếu có dữ liệu phiên, chỉ lấy đúng các câu hỏi đó. 
-    # Fallback nếu lịch sử cũ (chưa fix) không có câu nào.
+    # Fallback nếu lịch sử cũ không có câu nào.
     if question_ids:
         questions = CauHoi.query.filter(CauHoi.MaCauHoi.in_(question_ids)).order_by(CauHoi.STT).all()
     else:
