@@ -29,11 +29,7 @@ def check_admin(user_id):
     user = NguoiDung.query.get(int(user_id))
     return user and user.VaiTro == 1
 
-
-# ══════════════════════════════════════════
-#  DASHBOARD STATS
-# ══════════════════════════════════════════
-
+# dashboard stats
 @admin_bp.route('/stats', methods=['GET'])
 @jwt_required()
 def get_dashboard_stats():
@@ -90,10 +86,7 @@ def get_dashboard_stats():
     }), 200
 
 
-# ══════════════════════════════════════════
-#  USER MANAGEMENT
-# ══════════════════════════════════════════
-
+# user management
 @admin_bp.route('/users', methods=['GET'])
 @jwt_required()
 def get_all_users():
@@ -221,11 +214,7 @@ def toggle_user_status(user_id):
         db.session.rollback()
         return jsonify({"message": f"Lỗi: {str(e)}"}), 500
 
-
-# ══════════════════════════════════════════
-#  EXAM MANAGEMENT
-# ══════════════════════════════════════════
-
+# exam management
 @admin_bp.route('/exams', methods=['GET'])
 @jwt_required()
 def get_all_exams():
@@ -356,11 +345,7 @@ def toggle_exam_status(exam_id):
         db.session.rollback()
         return jsonify({"message": f"Lỗi: {str(e)}"}), 500
 
-
-# ══════════════════════════════════════════
-#  QUESTION MANAGEMENT
-# ══════════════════════════════════════════
-
+# question management
 @admin_bp.route('/exams/<int:exam_id>/questions', methods=['GET'])
 @jwt_required()
 def get_exam_questions(exam_id):
@@ -543,11 +528,7 @@ def delete_question(question_id):
         db.session.rollback()
         return jsonify({"message": f"Lỗi: {str(e)}"}), 500
 
-
-# ══════════════════════════════════════════
-#  QUESTION GROUPS
-# ══════════════════════════════════════════
-
+# question group
 @admin_bp.route('/exams/<int:exam_id>/groups', methods=['GET'])
 @jwt_required()
 def get_exam_groups(exam_id):
@@ -576,11 +557,7 @@ def get_exam_groups(exam_id):
 
     return jsonify(result), 200
 
-
-# ══════════════════════════════════════════
-#  FLASHCARD STATS (Read-only)
-# ══════════════════════════════════════════
-
+# flashcard stats
 @admin_bp.route('/flashcard-stats', methods=['GET'])
 @jwt_required()
 def get_flashcard_stats():
@@ -629,11 +606,7 @@ def get_flashcard_stats():
         "decks": decks
     }), 200
 
-
-# ══════════════════════════════════════════
-#  FILE UPLOAD (Cloudinary)
-# ══════════════════════════════════════════
-
+# file upload (Cloudinary)
 @admin_bp.route('/upload', methods=['POST'])
 @jwt_required()
 def upload_file():
@@ -673,11 +646,7 @@ def upload_file():
     except Exception as e:
         return jsonify({"message": f"Lỗi upload: {str(e)}"}), 500
 
-
-# ══════════════════════════════════════════
-#  GROUP CREATION (with file uploads)
-# ══════════════════════════════════════════
-
+# group creation
 @admin_bp.route('/groups', methods=['POST'])
 @jwt_required()
 def create_group():

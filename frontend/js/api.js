@@ -63,7 +63,8 @@ export async function getSessionDetail(sessionId) {
     });
     return res.json();
 }
-// ========== DECKS API ==========
+
+// deck api
 export async function getDecks() {
     const res = await fetch(`${BASE_URL}/api/flashcards/decks`, {
     method: "GET",
@@ -102,8 +103,8 @@ export async function updateDeck(deckId,data) {
   });
   return res.json();
 }
-// ========== FLASHCARD API ==========
 
+// flashcard api
 export async function createCard(deckId, data) {
   const res = await fetch(`${BASE_URL}/api/flashcards/decks/${deckId}/cards`, {
     method: "POST",
@@ -127,8 +128,8 @@ export async function deleteCard(cardId) {
   });
   return res.json();
 }
-// ========== Admin API — Dashboard ==========
 
+// admin stats
 export async function getAdminStats() {
     const res = await fetch(`${BASE_URL}/api/admin/stats`, {
         headers: authHeaders()
@@ -136,8 +137,7 @@ export async function getAdminStats() {
     return res.json();
 }
 
-// ========== Admin API — Users ==========
-
+// admin/users
 export async function getAdminUsers() {
     const res = await fetch(`${BASE_URL}/api/admin/users`, {
         headers: authHeaders()
@@ -179,8 +179,7 @@ export async function toggleUserStatus(id) {
     return res.json();
 }
 
-// ========== Admin API — Exams ==========
-
+// admin/exams
 export async function getAdminExams() {
     const res = await fetch(`${BASE_URL}/api/admin/exams`, {
         headers: authHeaders()
@@ -222,8 +221,7 @@ export async function toggleExamStatus(id) {
     return res.json();
 }
 
-// ========== Admin API — Questions ==========
-
+// admin/question
 export async function getExamQuestions(examId) {
     const res = await fetch(`${BASE_URL}/api/admin/exams/${examId}/questions`, {
         headers: authHeaders()
@@ -264,8 +262,7 @@ export async function getExamGroups(examId) {
     return res.json();
 }
 
-// ========== Admin API — Flashcard Stats ==========
-
+// flashcard stats/admin dashboard stats
 export async function getFlashcardStats() {
     const res = await fetch(`${BASE_URL}/api/admin/flashcard-stats`, {
         headers: authHeaders()
@@ -273,8 +270,7 @@ export async function getFlashcardStats() {
     return res.json();
 }
 
-// ========== Admin API — File Upload ==========
-
+// admin file upload (Cloudinary)
 export async function uploadFile(file, type = 'image') {
     const token = localStorage.getItem("token");
     const formData = new FormData();
@@ -291,8 +287,7 @@ export async function uploadFile(file, type = 'image') {
     return res.json();
 }
 
-// ========== Admin API — Group Creation ==========
-
+// admin group creation (with file uploads) 
 export async function createGroup(formData) {
     const token = localStorage.getItem("token");
     const res = await fetch(`${BASE_URL}/api/admin/groups`, {

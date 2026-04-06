@@ -116,6 +116,10 @@ export function initAuthModal() {
       switchToLogin();
       openModal();
     }
+    if(e.target.id === "heroCtaBtn" && isLoggedIn()) {
+      e.preventDefault();
+      window.location.href = "./toeic.html";
+    }
   });
 
   if (closeBtn) closeBtn.addEventListener("click", closeModal);
